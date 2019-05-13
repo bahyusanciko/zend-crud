@@ -9,54 +9,45 @@
     <!-- GC -->
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     <script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/extjs/ext-all.js"></script>
-    <script type="text/javascript" >
-    </script>
-     <script type="text/javascript">
+    <script type="text/javascript">
     
     Ext.require([
     'Ext.grid.*',
     'Ext.data.*',
     'Ext.util.*',
     'Ext.state.*'
-    ]);
-    Ext.define('admin', {
-        extend: 'Ext.data.Model',
-        fields: [
-           {name: 'kd_admin'},
-           {name: 'nama_admin'},
-           {name: 'email_admin'},
-           {name: 'no_hp_admin'}
-        ],
-
-        idProperty: 'admin'
-    });
-    
+    ]);   
     Ext.onReady(function() {
         Ext.QuickTips.init();
-        
         // setup the state provider, all state information will be saved to a cookie
         Ext.state.Manager.setProvider(Ext.create('Ext.state.CookieProvider'));
 
         // sample static data for the store
-        var myData =
-            <?php echo $this->data ?>
-                    
-        ;
-       
+        var sourceStore  = new Ext.data.JsonStore({
+         extend: 'Ext.data.Model',
+                fields: [
+                   {name: 'kd_admin',type: 'string'},
+                   {name: 'nama_admin',type: 'string'},
+                   {name: 'email_admin',type: 'string'},
+                   {name: 'no_hp_admin',type: 'string'}
+                ],
+          autoLoad: true,
+          proxy:{
+            type:'ajax',
+            url:'<?php echo $this->baseUrl('/admin/getadmin'); ?>',
+            reader:{
+                 type:'json',
+                 root:'users'
+                }
+            }
 
-        // create the data store
-        var store = Ext.create('Ext.data.ArrayStore', {
-            model: 'admin',
-            data: myData,
-            
         });
-        
+        this.sourceStore = sourceStore; 
         var rowEditing = Ext.create('Ext.grid.plugin.RowEditing', {
-	clicksToMoveEditor: 1,
-	autoCancel: false,
-	listeners: {
+    	clicksToMoveEditor: 1,
+    	autoCancel: false,
+    	listeners: {
 		validateedit: function(editor,e,opt){
-//			console.log(e.newValues);  //Correct
                         $.ajax({
                             url: '<?php echo $this->baseUrl()?>/admin/updatejson',
                             type: 'post',
@@ -69,12 +60,97 @@
                             }
                         });   
 		}
-	}
+	   }
         });
+        var simple = Ext.widget({
+         xtype: 'form',
+        layout: 'form',
+        collapsible: false,
+        id: 'simpleForm',
+        frame: true,
+        title: 'Tambah Akun',
+        method:'POST',
+        width: 600,
+        renderTo: 'tambah',
+        defaultType: 'textfield',
+        items: [
+        {
+            fieldLabel: 'Username',
+            type : 'text',
+            name: 'username',
+            allowBlank: false,
+        },
+        {
+            fieldLabel: 'Password',
+            type : 'text',
+            name: 'password',
+            inputType: 'password',
+            allowBlank: false,
+        },
+        {
+            fieldLabel: 'Nama',
+            type : 'text',
+            name: 'nama',
+            allowBlank: false,
+        },
+        {
+            fieldLabel: 'email',
+            type : 'text',
+            name: 'email',
+            vtype:'email',
+            allowBlank: false,
+        },
+        {
+            fieldLabel: 'Nomor HP',
+            type : 'text',
+            name: 'nomor',
+            allowBlank: false,
+        },
+        ],
+
+        buttons: [
+        {
+            type: 'submit',
+            text: 'Tambah',
+            handler: function(){ insert(); }
+        }],
+
+    });
+      var insert = function(){
+      if(simple.getForm().isValid()){
+                Ext.Msg.confirm("Confirmation", "Do you want to Tambah changes?", function(btnText){
+                            if(btnText === "no"){
+                                Ext.Msg.alert("Alert", "You have confirmed 'Tambah'.");
+                            }
+                            else if(btnText === "yes"){
+                               simple.getForm().submit({
+                  method:'POST',
+                  url: '<?php echo $this->baseUrl() ?>/admin/insert',
+                  waitMsg: 'Processing Request',
+                  failure:function(form, action){
+                    if(action.response.responseText == '"Success"'){
+                        Ext.Msg.alert('Berhasil', 'Tambah Akun', Ext.emptyFn);
+                        sourceStore.load();                                          
+                    }else{
+                       Ext.Msg.alert('Salah', 'gagal Tambah', Ext.emptyFn);
+                    }
+                    simple.getForm().reset();
+                }
+
+
+              });
+                                
+                            }
+                        }, this);
+              
+
+        }
+          };
+
         var grid = Ext.create('Ext.grid.Panel', {
             renderTo: document.body,
             plugins: [rowEditing],
-            store: store,
+            store :sourceStore,
             tbar: tolbar,
             buttons: [
             {
@@ -90,13 +166,13 @@
             stateId: 'stateGrid',
             columns: [
                 {
-                    text     : 'Kode Admin',
-                    width    : 75,
-                    sortable : true,
+                    header     : 'Kode Admin',
+                    flex     : 1,
+                    sortable : false,
                     dataIndex: 'kd_admin',
                 },
                 {
-                    text     : 'Nama Admin',
+                    header     : 'Nama Admin',
                     width    : 75,
                     sortable : true,
                     dataIndex: 'nama_admin',
@@ -105,7 +181,7 @@
                     }
                 },
                 {
-                    text     : 'Email Admin',
+                    header     : 'Email Admin',
                     width    : 75,
                     sortable : true,
                     dataIndex: 'email_admin',
@@ -114,7 +190,7 @@
                     }
                 },
                 {
-                    text     : 'Nomor HP',
+                    header     : 'Nomor HP',
                     width    : 85,
                     sortable : true,
                     dataIndex: 'no_hp_admin',
@@ -124,7 +200,7 @@
                 },
                 
                 {
-                    text     : 'Action',
+                    header     : 'Action',
                     menuDisabled: false,
                     sortable: false,
                     xtype: 'actioncolumn',
@@ -138,8 +214,30 @@
                                 Ext.Msg.alert("Alert", "You have confirmed 'No'.");
                             }
                             else if(btnText === "yes"){
-                                var rec = store.getAt(rowIndex);
-                                location.href = "<?php echo $this->baseurl() ?>/admin/delete/id/"+ rec.get('kd_admin');
+                                 var rec = sourceStore.getAt(rowIndex);
+                                 Ext.Ajax.request({
+                                    method: 'POST',
+                                    url: '<?php echo $this->baseUrl('/admin/delete/') ?>',
+                                    standardSubmit: true,
+                                    disableCaching: false,
+                                    id  : 'deleteget',
+                                    success: function(response, opts) {
+                                        
+                                        if(response.responseText == '"Failed"'){
+                                            Ext.Msg.alert('alert', 'Data Tidak');                                                   
+                                        }else{
+                                            Ext.Msg.alert('alert', 'Data Berhasil Di hapus');
+                                            sourceStore.load();
+                                        }                    
+                                    },
+                                    failure: function() {
+                                        Ext.Msg.alert('', 'failed');
+                                    },
+                                    params: {
+                                        action: 'delete',
+                                        name : rec.get('kd_admin'),
+                                    }
+                                });
                                 
                             }
                         }, this);
@@ -156,7 +254,7 @@
             renderTo: 'grid-example',
             viewConfig: {
             stripeRows: true,
-            enableTextSelection: true
+            enableTextSelection: true,
             }
         });
     });
@@ -171,7 +269,7 @@
     items: [{
             text: 'Reload Data',
             handler : function(){
-            location.href = "<?php echo $this->baseUrl() ?>/admin/";  
+            sourceStore.load(); 
             }
     },
         {   icon   : '<?php echo $this->baseUrl(); ?>/extjs/examples/shared/icons/fam/add.gif',
@@ -194,7 +292,7 @@
         listeners: {
               select: function(text){
 //               Ext.Msg.alert('alert', 'Cari Data ' +text.lastValue);  
-//               console.log(text.lastValue)
+              // console.log(text.lastValue);
               }
             }
         },
@@ -219,13 +317,11 @@
                 success: function(response, opts) {
                     
                     if(response.responseText == '"kosong"'){
-                        console.log(response);
                     	Ext.Msg.alert('alert', 'Data Tidak');                                                   
                     }else{
-                        var getkod = Ext.getCmp('get').getValue();
-                        location.href = "<?php echo $this->baseUrl('/admin/cari/') ?>"+ getkod + '/'+ response.request.options.params.name ; 
-                        console.log(response.request.options.params.name);
-                        console.log(Ext.getCmp('get').getValue())
+                        sourceStore.clearData();
+                        sourceStore.loadRawData(Ext.JSON.decode(response.responseText), true);
+
                     }                    
                 },
                 failure: function() {
@@ -239,12 +335,13 @@
         }        
         }
     ]
-});  
+}); 
 </script>
 </head>
 <body>
     <h1 align="center">Hai, <?php echo $this->user ?></h1>
-   
+    <div align="center" id="tambah"></div>
+    <br>
     <div align="center" id="grid-example"></div>
 </body>
 </html>

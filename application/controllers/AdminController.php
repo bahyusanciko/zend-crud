@@ -20,33 +20,27 @@ class AdminController extends Zend_Controller_Action{
             $this->redirect('login');
         }
     }
-    public function indexAction()
-    {
-//       $this->getsecurity();
-        // die(print_r($this->session->user['username_admin'])); 
-        $data = $this->model->allAdmin();
-        $this->view->title = 'List Admin';
-        foreach ($data as $row) {
-            $itemArray[] = [
-                $row['kd_admin'], 
-                $row['nama_admin'],
-                $row['email_admin'],
-                $row['no_hp_admin']
-            ];
-        }
-        $this->view->user =  $this->session->user['nama_admin'];
-        $this->view->data =  json_encode($itemArray);
+    public function indexAction(){
+        $this->redirect('menu');
     }
-
+    public function getadminAction(){
+        $data = $this->model->allAdmin();
+        $itemArray['users'] = array_values($data);
+        echo json_encode($itemArray,JSON_PRETTY_PRINT);
+        die();
+    }
     public function deleteAction(){
-//        $this->getsecurity()
-        $adminId = $this->_getparam('id' , 0);
+        $adminId = $_POST['name'];
         $cek = $this->model->deleteAdmin($adminId);
-        if ($cek) {
-            $this->redirect('admin');
-            }else{
-            $this->redirect('admin/view/id/'.$adminId);
-            }      
+        if ($cek){
+        $data = "Success";
+            echo json_encode($data);
+            die();
+        }else{
+            $data = "Failed";
+            echo json_encode($data);
+            die();
+        }      
     }
     public function viewAction(){
 //        $this->getsecurity();
@@ -54,10 +48,12 @@ class AdminController extends Zend_Controller_Action{
         // print_r($adminId);
         $sqlcek = $this->model->viewAdmin($adminId);
         if ($sqlcek) {
-             // die(print_r($sqlcek));
-            $this->view->data = $sqlcek;
+            $data = "Success";
+            echo json_encode($data);
+            die();
         }else{
-            $this->redirect('login/admin');
+             $data = "Failed";
+             echo json_encode($data);
         }
     }
     public function updatejsonAction(){
@@ -128,44 +124,6 @@ class AdminController extends Zend_Controller_Action{
         die();
         }
     }
-    function cariAction() {
-//        die(print_r($_POST));
-        $kode = $this->_getparam('Kode' , 0);
-        $nama = $this->_getparam('Nama' , 0);
-        $email = $this->_getparam('Email' , 0);
-        $nomor = $this->_getparam('Nomor' , 0);
-        if ($kode) {
-            $sqlcek = $this->model->cariAdmin($kode);
-        }elseif ($nama) {
-            $sqlcek = $this->db->query('select * from tbl_admin where nama_admin like "'.$nama.'%"')->fetchAll();
-        }elseif ($email) {
-            $sqlcek = $this->db->query('select * from tbl_admin where email_admin like "'.$email.'%"')->fetchAll();
-        }elseif ($nomor) {
-            $sqlcek = $this->db->query('select * from tbl_admin where no_hp_admin like "'.$nomor.'%"')->fetchAll();
-        }else{
-            $error = 'kosong';
-            echo json_encode($error);
-            die();
-        }
-        if ($sqlcek) {
-            $this->view->title = 'List Admin';
-            foreach ($sqlcek as $row) {
-            $itemArray[] = [
-                $row['kd_admin'], 
-                
-                $row['nama_admin'],
-                $row['email_admin'],
-                $row['no_hp_admin']
-            ];
-        }
-        $this->view->user =  $this->session->user['nama_admin'];
-        $this->view->data =  json_encode($itemArray); 
-        }else{
-            $error = 'kosong';
-            echo json_encode($error);
-            die();
-        }
-    }
     function searchAction() {
 //        die(print_r($_GET['action']));
         $id = $_GET['name'];
@@ -183,18 +141,9 @@ class AdminController extends Zend_Controller_Action{
             die();
         }
         if ($sqlcek) {
-            $this->view->title = 'List Admin';
-            foreach ($sqlcek as $row) {
-            $itemArray[] = [
-                $row['kd_admin'], 
-                
-                $row['nama_admin'],
-                $row['email_admin'],
-                $row['no_hp_admin']
-            ];
-        }
-         echo json_encode($itemArray);
-         die();
+            $itemArray['users'] = array_values($sqlcek);
+            echo json_encode($itemArray,JSON_PRETTY_PRINT);
+            die();
         }else{
             $error = 'kosong';
             echo json_encode($error);

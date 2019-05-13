@@ -49,15 +49,7 @@ class IndexController extends Zend_Controller_Action
 
     }
     public function viewAction(){
-        $adminId = $this->_getparam('id' , 0);
-        // print_r($adminId);
-        $sqlcek = $this->db->query("SELECT * FROM tbl_admin WHERE kd_admin = '".$adminId."'")->fetch();
-        if ($sqlcek) {
-            $this->view->title = 'View Admin';
-            $this->view->admin = $sqlcek;
-        }else{
-            echo "kosong";
-        }
+        echo "string";
     }
     function getUserIP()
     {
