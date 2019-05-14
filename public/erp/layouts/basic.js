@@ -27,6 +27,7 @@ function getBasicLayouts() {
             id: 'start-panel',
             title: 'Home Page',
             layout: 'fit',
+            autoScroll: true,
             bodyStyle: 'padding:25px',
             contentEl: 'start-div'  // pull existing content from the page
         },
@@ -48,7 +49,8 @@ function getBasicLayouts() {
         jabatan: {
             id: 'accordion-panel',
             title: 'Jabatan ',
-            layout: 'fit',
+            layout:'column',
+            autoScroll:true,
             bodyStyle: 'padding:25px',
             contentEl: 'jabatan-div' 
         },

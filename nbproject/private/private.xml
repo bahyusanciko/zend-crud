@@ -5,9 +5,9 @@
         <group>
             <file>file:/E:/xampp/htdocs/zendtest/application/views/scripts/admin/index.phtml</file>
             <file>file:/E:/xampp/htdocs/zendtest/application/models/Admin.php</file>
-            <file>file:/E:/xampp/htdocs/zendtest/application/views/scripts/admin/search.phtml</file>
+            <file>file:/E:/xampp/htdocs/zendtest/application/views/scripts/menu/index.phtml</file>
+            <file>file:/E:/xampp/htdocs/zendtest/application/views/scripts/admin/cari.phtml</file>
             <file>file:/E:/xampp/htdocs/zendtest/application/controllers/AdminController.php</file>
-            <file>file:/E:/xampp/htdocs/zendtest/application/views/scripts/admin/test.phtml</file>
             <file>file:/E:/xampp/htdocs/zendtest/application/views/scripts/admin/tambah.phtml</file>
         </group>
     </open-files>

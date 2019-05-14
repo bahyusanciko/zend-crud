@@ -77,29 +77,7 @@ class AdminController extends Zend_Controller_Action{
         die();
         }
     }
-    public function updateAction(){
-//        $this->getsecurity();
-        $data = array(
-            'kd_admin' => $_POST['kode'],
-            'nama_admin' => $_POST['nama'],
-            'email_admin' => $_POST['email'],
-            'no_hp_admin' => $_POST['nomor']
-             );
-        $sqlcek = $this->model->updateAdmin($data);
-        if ($sqlcek) {
-            $data = "Success";
-            echo json_encode($data);
-            die();
-        }else{
-        $data = "Failed";
-        echo json_encode($data);
-        die();
-        }
-    }
-    public function tambahAction(){
-//        $this->getsecurity();
-        $this->view->title = "Tambah Data";
-    }
+
     public function insertAction(){
 //        $this->getsecurity();
         $data = array(

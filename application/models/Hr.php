@@ -1,49 +1,53 @@
 <?php
 class Application_Model_Hr extends Zend_Db_Table
 {
-	public function init()
+	function init()
     {
         /* Initialize action controller here */
         $this->db = Zend_Db_Table::getDefaultAdapter();
     }
-    public function allDep()
-    {
+    function allDep(){
         $result = $this->db->query("SELECT * FROM tbl_department")->fetchAll();
         // die(print_r($result));
         return $result;
     }
-    public function cekAdmin($id='')
+    function allJab(){
+        $result = $this->db->query("SELECT * FROM tbl_jabatan,tbl_department WHERE tbl_department.kd_department = tbl_jabatan.kd_department ")->fetchAll();
+        // die(print_r($result));
+        return $result;
+    }
+    function cariDep($id='')
     {
-    	$result = $this->db->query('select * from tbl_admin where username_admin = "'.$id.'"')->fetch();
+    	$result = $this->db->query('select * from tbl_department where kd_department = "'.$id.'"')->fetchAll();
     	// die(print_r($result));
     	return $result;
     }
-    public function viewAdmin($id='')
-    {
-        $result = $this->db->query('select * from tbl_admin where kd_admin = "'.$id.'"')->fetch();
-        // die(print_r($result));
-        return $result;
-    }
-    public function deleteAdmin($id=''){
-    	$result = $this->db->query('DELETE FROM tbl_admin WHERE kd_admin = "'.$id.'" ');
+    function deleteDep($id=''){
+    	$result = $this->db->query('DELETE FROM tbl_Dep WHERE kd_Dep = "'.$id.'" ');
     	// die(print_r($result));
     	return $result;
     }
-    public function updateAdmin($id=''){
-        $result = $this->db->query("UPDATE tbl_admin SET nama_admin = '".$id['nama_admin']."', email_admin = '".$id['email_admin']."', no_hp_admin = '".$id['no_hp_admin']."' WHERE kd_admin = '".$id['kd_admin']."' ");
+    function updateDep($data=''){
+        $result = $this->db->query("UPDATE tbl_department SET nama_department = '".$data['nama_department']."' WHERE kd_department = '".$data['kd_department']."' ");
         // die(print_r($result));
         return $result;
     }
-    public function insertAdmin($id=''){
-        $result = $this->db->query('INSERT INTO tbl_admin (kd_admin, username_admin, password_admin, nama_admin, email_admin, no_hp_admin,img_admin, level_admin, create_date_admin )
-        VALUES ("'.$id['kd_admin'].'", "'.$id['username_admin'].'", "'.$id['password_admin'].'", "'.$id['nama_admin'].'","'.$id['email_admin'].'","'.$id['no_hp_admin'].'","'.$id['img_admin'].'","'.$id['level_admin'].'","'.$id['create_date_admin'].'")');
+    function insertDep($data=''){
+        $result = $this->db->query('INSERT INTO tbl_department (kd_department, nama_department )
+        VALUES ("'.$data['kd_department'].'","'.$data['nama_department'].'")');
         // die(print_r($result));
         return $result;
     }
-    function cariAdmin($id) {
-        $result = $this->db->query('select * from tbl_admin where kd_admin like "'.$id.'%"')->fetchAll();
-    	// die(print_r($result));
-    	return $result;
+    function insertJab($data=''){
+        $result = $this->db->query('INSERT INTO tbl_jabatan ( kd_jabatan, kd_department, nama_jabatan )
+        VALUES ("'.$data['kd_jabatan'].'","'.$data['kd_department'].'","'.$data['nama_jabatan'].'")');
+        // die(print_r($result));
+        return $result;
+    }
+    function updateJab($data=''){
+        $result = $this->db->query("UPDATE tbl_jabatan SET nama_jabatan = '".$data['nama_jabatan']."' , kd_department = '".$data['kd_department']."' WHERE kd_jabatan = '".$data['kd_jabatan']."' ");
+        // die(print_r($result));
+        return $result;
     }
 }
 
