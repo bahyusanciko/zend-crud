@@ -3,37 +3,19 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title>QDC</title>
+        <link REL="SHORTCUT ICON" HREF="<?php echo $this->baseUrl() ?>/favicon.ico">
         <!-- Ext -->
         <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl() ?>/extjs/resources/css/ext-all.css" />
         <script type="text/javascript" src="<?php echo $this->baseUrl() ?>/extjs/ext-all.js"></script>
         <!-- example code -->
-        <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl() ?>/erp/layouts/layout-browser.css">
+        <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl() ?>/erp/menu.css">
         <!-- GC -->
         <!-- page specific -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
-        <script type="text/javascript" src="<?php echo $this->baseUrl() ?>/erp/layouts/basic.js"></script>
-        <script type="text/javascript" src="<?php echo $this->baseUrl() ?>/erp/layouts/custom.js"></script>
-        <script type="text/javascript" src="<?php echo $this->baseUrl() ?>/erp/layouts/combination.js"></script>
+        <script type="text/javascript" src="<?php echo $this->baseUrl() ?>/erp/hr.js"></script>
+        <script type="text/javascript" src="<?php echo $this->baseUrl() ?>/erp/admin.js"></script>
         <script type="text/javascript">
-        Ext.Loader.setConfig({enabled: true});
-
         Ext.Loader.setPath('Ext.ux', '<?php echo $this->baseUrl('/extjs/examples/ux/') ?>');
-
-        Ext.require([
-            'Ext.tip.QuickTipManager',
-            'Ext.container.Viewport',
-            'Ext.layout.*',
-            'Ext.form.Panel',
-            'Ext.form.Label',
-            'Ext.grid.*',
-            'Ext.data.*',
-            'Ext.tree.*',
-            'Ext.selection.*',
-            'Ext.tab.Panel',
-            'Ext.ux.layout.Center',
-            'Ext.util.*',
-            'Ext.state.*'  
-        ]);
 
         //
         // This is the main layout definition.
@@ -44,16 +26,15 @@
 
             // This is an inner body element within the Details panel created to provide a "slide in" effect
             // on the panel body without affecting the body's box itself.  This element is created on
-            // initial use and cached in this var for subsequent access.
-            var detailEl;
-            
+            // initial use and cached in this var for subsequent access.            
             // Gets all layouts examples
             var layoutExamples = [];
-            Ext.Object.each(getBasicLayouts(), function(name, example) {
+            Ext.Object.each(getHrLayouts(), function(name, example) {
+                // console.log(example)
                 layoutExamples.push(example);
             });
             
-            Ext.Object.each(getCustomLayouts(), function(name, example){
+            Ext.Object.each(getAdminLayouts(), function(name, example){
                 layoutExamples.push(example);
             });
             
@@ -77,7 +58,7 @@
                 },
                 proxy: {
                     type: 'ajax',
-                    url: '<?php echo $this->baseUrl() ?>/extjs/examples/layout-browser/tree-data.json'
+                    url: '<?php echo $this->baseUrl() ?>/erp/tree-navbar.json'
                 }
             });
             
@@ -99,12 +80,6 @@
             treePanel.getSelectionModel().on('select', function(selModel, record) {
                 if (record.get('leaf')) {
                     Ext.getCmp('content-panel').layout.setActiveItem(record.getId() + '-panel');
-                     if (!detailEl) {
-                        var bd = Ext.getCmp('details-panel').body;
-                        bd.update('').setStyle('background','#fff');
-                        detailEl = bd.createChild(); //create default empty div
-                    }
-                    // detailEl.hide().update(Ext.getDom(record.getId() + '-details').innerHTML).slideIn('l', {stopAnimation:true,duration: 200});
                 }
             });
             
@@ -115,7 +90,7 @@
                 region: 'center',
                 bodyStyle: 'padding-bottom:15px;background:#eee;',
                 autoScroll: true,
-                html: '<p class="details-info">When you select a layout from the tree, additional details will display here.</p>'
+                html: '<p class="details-info">Helo World</p>'
             };
          
             // Finally, build the main layout once all the pieces are ready.  This is also a good
@@ -149,859 +124,9 @@
             });
         });
 </script>
-<script type="text/javascript">  
-    Ext.onReady(function() {
-        // sample static data for the store
-        var sourceStore  = new Ext.data.JsonStore({
-         extend: 'Ext.data.Model',
-                fields: [
-                   {name: 'kd_admin',type: 'string'},
-                   {name: 'nama_admin',type: 'string'},
-                   {name: 'email_admin',type: 'string'},
-                   {name: 'no_hp_admin',type: 'string'}
-                ],
-          autoLoad: true,
-          proxy:{
-            type:'ajax',
-            url:'<?php echo $this->baseUrl('/admin/getadmin'); ?>',
-            reader:{
-                 type:'json',
-                 root:'users'
-                }
-            }
-
-        });
-        this.sourceStore = sourceStore; 
-        var rowEditing = Ext.create('Ext.grid.plugin.RowEditing', {
-        clicksToMoveEditor: 1,
-        autoCancel: false,
-        listeners: {
-        validateedit: function(editor,e,opt){
-                        $.ajax({
-                            url: '<?php echo $this->baseUrl()?>/admin/updatejson',
-                            type: 'post',
-                            data: { data : JSON.stringify( e.newValues ) }, // Our valid JSON string
-                            success: function( data, status, xhr ) {
-                                Ext.Msg.alert("Alert", "Update Data Berhasil.");
-                                sourceStore.load(); 
-                            },
-                            error: function( xhr, status, error ) {
-                               Ext.Msg.alert("Alert", "Update Data Gagal.");
-                            }
-                        });   
-        }
-       }
-        });
-        var simple = Ext.widget({
-         xtype: 'form',
-        layout: 'form',
-        collapsible: false,
-        id: 'admin',
-        frame: true,
-        title: 'Tambah Akun',
-        method:'POST',
-        width: 600,
-        renderTo: 'tambah-admin',
-        defaultType: 'textfield',
-        items: [
-        {
-            fieldLabel: 'Username',
-            type : 'text',
-            name: 'username',
-            allowBlank: false,
-        },
-        {
-            fieldLabel: 'Password',
-            type : 'text',
-            name: 'password',
-            inputType: 'password',
-            allowBlank: false,
-        },
-        {
-            fieldLabel: 'Nama',
-            type : 'text',
-            name: 'nama',
-            allowBlank: false,
-        },
-        {
-            fieldLabel: 'email',
-            type : 'text',
-            name: 'email',
-            vtype:'email',
-            allowBlank: false,
-        },
-        {
-            fieldLabel: 'Nomor HP',
-            type : 'text',
-            name: 'nomor',
-            allowBlank: false,
-        },
-        ],
-
-        buttons: [
-        {
-            type: 'submit',
-            text: 'Tambah',
-            handler: function(){ insert(); }
-        }],
-
-    });
-      var insert = function(){
-      if(simple.getForm().isValid()){
-                Ext.Msg.confirm("Confirmation", "Do you want to Tambah changes?", function(btnText){
-                            if(btnText === "no"){
-                                Ext.Msg.alert("Alert", "You have confirmed 'Tambah'.");
-                            }
-                            else if(btnText === "yes"){
-                               simple.getForm().submit({
-                  method:'POST',
-                  url: '<?php echo $this->baseUrl() ?>/admin/insert',
-                  waitMsg: 'Processing Request',
-                  failure:function(form, action){
-                    if(action.response.responseText == '"Success"'){
-                        Ext.Msg.alert('Berhasil', 'Tambah Akun', Ext.emptyFn);
-                        sourceStore.load();                                          
-                    }else{
-                       Ext.Msg.alert('Salah', 'gagal Tambah', Ext.emptyFn);
-                    }
-                    simple.getForm().reset();
-                }
-
-
-              });
-                                
-                            }
-                        }, this);
-              
-
-        }
-          };
-
-        var grid = Ext.create('Ext.grid.Panel', {
-            renderTo: document.body,
-            plugins: [rowEditing],
-            store :sourceStore,
-            tbar: toolbaradmin,
-            stateful: true,
-            collapsible: false,
-            multiSelect: true,
-            stateId: 'stateGrid',
-            columns: [
-                {
-                    header     : 'Kode Admin',
-                    flex     : 1,
-                    sortable : false,
-                    dataIndex: 'kd_admin',
-                },
-                {
-                    header     : 'Nama Admin',
-                    width    : 75,
-                    sortable : true,
-                    dataIndex: 'nama_admin',
-                    field: {
-                    xtype: 'textfield'
-                    }
-                },
-                {
-                    header     : 'Email Admin',
-                    width    : 75,
-                    sortable : true,
-                    dataIndex: 'email_admin',
-                    field: {
-                    xtype: 'textfield'
-                    }
-                },
-                {
-                    header     : 'Nomor HP',
-                    width    : 85,
-                    sortable : true,
-                    dataIndex: 'no_hp_admin',
-                    field: {
-                    xtype: 'textfield'
-                    }
-                },
-                
-                {
-                    header     : 'Action',
-                    menuDisabled: false,
-                    sortable: false,
-                    xtype: 'actioncolumn',
-                    width: 50,
-                    items: [{
-                        icon   : '<?php echo $this->baseUrl(); ?>/extjs/examples/shared/icons/fam/delete.gif',  // Use a URL in the icon config
-                        tooltip: 'Delete',
-                        handler: function(grid, rowIndex, colIndex) {
-                           Ext.Msg.confirm("Confirmation", "Do you want to Delete changes?", function(btnText){
-                            if(btnText === "no"){
-                                Ext.Msg.alert("Alert", "You have confirmed 'No'.");
-                            }
-                            else if(btnText === "yes"){
-                                 var rec = sourceStore.getAt(rowIndex);
-                                 Ext.Ajax.request({
-                                    method: 'POST',
-                                    url: '<?php echo $this->baseUrl('/admin/delete/') ?>',
-                                    standardSubmit: true,
-                                    disableCaching: false,
-                                    id  : 'deleteget',
-                                    success: function(response, opts) {
-                                        
-                                        if(response.responseText == '"Failed"'){
-                                            Ext.Msg.alert('alert', 'Data Tidak');                                                   
-                                        }else{
-                                            Ext.Msg.alert('alert', 'Data Berhasil Di hapus');
-                                            sourceStore.load();
-                                        }                    
-                                    },
-                                    failure: function() {
-                                        Ext.Msg.alert('', 'failed');
-                                    },
-                                    params: {
-                                        action: 'delete',
-                                        name : rec.get('kd_admin'),
-                                    }
-                                });
-                                
-                            }
-                        }, this);
-                     
-                            
-                        }
-                    }
-                    ]
-                }
-            ], 
-            height: 350,
-            width: 600,
-            title: 'Table Admin',
-            renderTo: 'grid-admin',
-            viewConfig: {
-            stripeRows: true,
-            enableTextSelection: true,
-            }
-        });
-    });
-    
-    var toolbaradmin = Ext.create('Ext.toolbar.Toolbar', {
-    id : 'form-id',
-    renderTo: document.body,
-    xtype: 'form',
-    method: 'POST',
-    width   : 50,
-    frame: true,
-    items: [{
-            text: 'Reload Data',
-            handler : function(){
-            sourceStore.load(); 
-            }
-            },
-        // begin using the right-justified button container
-        '->', // same as { xtype: 'tbfill' }
-        {
-        xtype     : 'combobox',
-        emptyText: 'Cari Berdasarkan',
-            id      : 'get',
-        store     : ['Kode',
-                        'Nama',
-                        'Email',
-                        'Nomor'
-                        ],
-            listeners: {
-              select: function(text){
-//               Ext.Msg.alert('alert', 'Cari Data ' +text.lastValue);  
-              // console.log(text.lastValue);
-              }
-            }
-        },
-        
-        {
-            xtype    : 'textfield',
-            name     : 'search',
-            type    : 'text',
-            emptyText: 'Cari Data',
-            id      : 'search',
-        },          
-        {   
-            icon   : '<?php echo $this->baseUrl(); ?>/extjs/docs/resources/images/preview.png',
-            type: 'submit',
-            handler: function(){ 
-            Ext.Ajax.request({
-                method: 'GET',
-                url: '<?php echo $this->baseUrl('/admin/search/') ?>',
-                standardSubmit: true,
-                disableCaching: false,
-                id  : 'cariget',
-                success: function(response, opts) {
-                    
-                    if(response.responseText == '"kosong"'){
-                        Ext.Msg.alert('alert', 'Data Tidak');                                                   
-                    }else{
-                        sourceStore.clearData();
-                        sourceStore.loadRawData(Ext.JSON.decode(response.responseText), true);
-
-                    }                    
-                },
-                failure: function() {
-                    Ext.Msg.alert('', 'failed');
-                },
-                params: {
-                    action: Ext.getCmp('get').getValue(),
-                    name : Ext.getCmp('search').getValue(),
-                }
-            });
-        }        
-        }
-    ]
-}); 
-</script>
-<script type="text/javascript">    
-    Ext.onReady(function() {
-
-        // sample static data for the store
-        var storedep  = new Ext.data.JsonStore({
-         extend: 'Ext.data.Model',
-                fields: [
-                   {name: 'kd_department',type: 'string'},
-                   {name: 'nama_department',type: 'string'},
-                ],
-          autoLoad: true,
-          proxy:{
-            type:'ajax',
-            url:'<?php echo $this->baseUrl('/hr/dep'); ?>',
-            reader:{
-                 type:'json',
-                 root:'dep'
-                }
-            }
-
-        });
-        this.storedep = storedep; 
-        var rowEditingDep = Ext.create('Ext.grid.plugin.RowEditing', {
-        clicksToMoveEditor: 1,
-        autoCancel: false,
-        listeners: {
-        validateedit: function(editor,e,opt){
-                        $.ajax({
-                            url: '<?php echo $this->baseUrl()?>/hr/updatedep',
-                            type: 'post',
-                            data: { data : JSON.stringify( e.newValues ) }, // Our valid JSON string
-                            success: function( data, status, xhr ) {
-                                storedep.load();
-                                Ext.Msg.alert("Alert", "Update Data Berhasil.");
-                            },
-                            error: function( xhr, status, error ) {
-                               Ext.Msg.alert("Alert", "Update Data Gagal.");
-                            }
-                        });   
-        }
-       }
-        });
-        var tambahdep = Ext.widget({
-         xtype: 'form',
-        layout: 'form',
-        collapsible: false,
-        frame: true,
-        title: 'Tambah Department',
-        method:'POST',
-        width: 600,
-        renderTo: 'tambah-department',
-        defaultType: 'textfield',
-        items: [
-        {
-            fieldLabel: 'Nama Devisi',
-            type : 'text',
-            name: 'nama',
-            allowBlank: false,
-        },
-        ],
-
-        buttons: [
-        {
-            type: 'submit',
-            text: 'Tambah',
-            handler: function(){ insertdep(); }
-        }],
-
-    });
-      var insertdep = function(){
-      if(tambahdep.getForm().isValid()){
-                Ext.Msg.confirm("Confirmation", "Do you want to Tambah changes?", function(btnText){
-                if(btnText === "no"){
-                    Ext.Msg.alert("Alert", "You have confirmed 'Tambah'.");
-                }
-                else if(btnText === "yes"){
-                  tambahdep.getForm().submit({
-                  method:'POST',
-                  url: '<?php echo $this->baseUrl() ?>/hr/insertdep',
-                  waitMsg: 'Processing Request',
-                  failure:function(form, action){
-                    if(action.response.responseText == '"Success"'){
-                        Ext.Msg.alert('Berhasil', 'Tambah Department', Ext.emptyFn);
-                        storedep.load();                                          
-                    }else{
-                       Ext.Msg.alert('Salah', 'gagal Tambah', Ext.emptyFn);
-                    }
-                    tambahdep.getForm().reset();
-                }
-
-
-              });
-                            }
-                        }, this);
-        }
-          };
-
-        var griddep = Ext.create('Ext.grid.Panel', {
-            plugins: [rowEditingDep],
-            store :storedep,
-            tbar: toolbardep,
-            stateful: true,
-            collapsible: false,
-            multiSelect: true,
-            stateId: 'stateGrid',
-            columns: [
-                {
-                    header     : 'Kode Department',
-                    flex     : 1,
-                    sortable : false,
-                    dataIndex: 'kd_department',
-                },
-                {
-                    header     : 'Nama Department',
-                    width    : 75,
-                    sortable : true,
-                    dataIndex: 'nama_department',
-                    field: {
-                    xtype: 'textfield'
-                    }
-                },
-                {
-                    header     : 'Action',
-                    menuDisabled: false,
-                    sortable: false,
-                    xtype: 'actioncolumn',
-                    width: 50,
-                    items: [{
-                        icon   : '<?php echo $this->baseUrl(); ?>/extjs/examples/shared/icons/fam/delete.gif',  // Use a URL in the icon config
-                        tooltip: 'Delete',
-                        handler: function(grid, rowIndex, colIndex) {
-                           Ext.Msg.confirm("Confirmation", "Do you want to Delete changes?", function(btnText){
-                            if(btnText === "no"){
-                                Ext.Msg.alert("Alert", "You have confirmed 'No'.");
-                            }
-                            else if(btnText === "yes"){
-                                 var rec = storedep.getAt(rowIndex);
-                                 Ext.Ajax.request({
-                                    method: 'POST',
-                                    url: '<?php echo $this->baseUrl('/hr/deletedep/') ?>',
-                                    standardSubmit: true,
-                                    disableCaching: false,
-                                    id  : 'deleteget',
-                                    success: function(response, opts) {
-                                        
-                                        if(response.responseText == '"Failed"'){
-                                            Ext.Msg.alert('alert', 'Data Tidak');                                                   
-                                        }else{
-                                            Ext.Msg.alert('alert', 'Data Berhasil Di hapus');
-                                            storedep.load();
-                                        }                    
-                                    },
-                                    failure: function() {
-                                        Ext.Msg.alert('', 'Gagal Terhubung Server Database');
-                                    },
-                                    params: {
-                                        action: 'delete',
-                                        name : rec.get('kd_department'),
-                                    }
-                                });
-                                
-                            }
-                        }, this);
-                     
-                            
-                        }
-                    }
-                    ]
-                }
-            ], 
-            height: 350,
-            width: 600,
-            title: 'Table Department',
-            renderTo: 'grid-department',
-            viewConfig: {
-            stripeRows: true,
-            enableTextSelection: true,
-            }
-        });
-    });
-    
-    var toolbardep = Ext.create('Ext.toolbar.Toolbar', {
-    id : 'dep-id',
-    renderTo: document.body,
-    xtype: 'form',
-    method: 'POST',
-    width   : 50,
-    frame: true,
-    items: [{
-            text: 'Reload Data',
-            handler : function(){
-            storedep.load(); 
-            }
-        },
-        // begin using the right-justified button container
-        '->', // same as { xtype: 'tbfill' }
-        {
-        xtype     : 'combobox',
-        emptyText: 'Cari Berdasarkan',
-        id      : 'getdep',
-        store     : ['Kode',
-                    'Department',
-                    ],
-        listeners: {
-              select: function(text){
-//               Ext.Msg.alert('alert', 'Cari Data ' +text.lastValue);  
-              // console.log(text.lastValue);
-              }
-            }
-        },
-        
-        {
-            xtype    : 'textfield',
-            name     : 'search',
-            type    : 'text',
-            emptyText: 'Cari Data',
-            id      : 'searchdep',
-        },          
-        {   
-            icon   : '<?php echo $this->baseUrl(); ?>/extjs/docs/resources/images/preview.png',
-            type: 'submit',
-            handler: function(){ 
-            Ext.Ajax.request({
-                method: 'GET',
-                url: '<?php echo $this->baseUrl('/hr/searchdep/') ?>',
-                standardSubmit: true,
-                disableCaching: false,
-                id  : 'cariget',
-                success: function(response, opts) {
-                    
-                    if(response.responseText == '"kosong"'){
-                        Ext.Msg.alert('alert', 'Data Tidak');                                                   
-                    }else{
-                        storedep.clearData();
-                        storedep.loadRawData(Ext.JSON.decode(response.responseText), true);
-                    }                    
-                },
-                failure: function() {
-                    Ext.Msg.alert('', 'failed');
-                },
-                params: {
-                    action: Ext.getCmp('getdep').getValue(),
-                    name : Ext.getCmp('searchdep').getValue(),
-                }
-            });
-        }        
-        }
-    ]
-}); 
-</script>
-<script type="text/javascript">   
-    Ext.onReady(function() {
-
-        // sample static data for the store
-        var storejab  = new Ext.data.JsonStore({
-         extend: 'Ext.data.Model',
-                fields: [
-                   {name: 'kd_jabatan',type: 'string'},
-                   {name: 'nama_department',type: 'string'},
-                   {name: 'nama_jabatan',type: 'string'},
-                ],
-          autoLoad: true,
-          proxy:{
-            type:'ajax',
-            url:'<?php echo $this->baseUrl('/hr/jab'); ?>',
-            reader:{
-                 type:'json',
-                 root:'jab'
-                }
-            }
-
-        });
-        var getdepstore  = new Ext.data.JsonStore({
-         extend: 'Ext.data.Model',
-                fields: [
-                   {name: 'kd_department',type: 'string'},
-                   {name: 'nama_department',type: 'string'},
-                ],
-          autoLoad: true,
-          proxy:{
-            type:'ajax',
-            url:'<?php echo $this->baseUrl('/hr/dep'); ?>',
-            reader:{
-                 type:'json',
-                 root:'dep'
-                }
-            }
-
-        });
-        this.storejab = storejab; 
-        var rowEditingJab = Ext.create('Ext.grid.plugin.RowEditing', {
-        clicksToMoveEditor: 1,
-        autoCancel: false,
-        listeners: {
-        validateedit: function(editor,e,opt){
-                        $.ajax({
-                            url: '<?php echo $this->baseUrl()?>/hr/updatejab',
-                            type: 'post',
-                            data: { data : JSON.stringify( e.newValues ) }, // Our valid JSON string
-                            success: function( data, status, xhr ) {
-                                Ext.Msg.alert("Alert", "Update Data Berhasil.");
-                                storejab.load();
-                            },
-                            error: function( xhr, status, error ) {
-                               Ext.Msg.alert("Alert", "Update Data Gagal.");
-                            }
-                        });   
-        }
-       }
-        });
-        var tambahjab = Ext.widget({
-        xtype: 'form',
-        layout: 'form',
-        collapsible: false,
-        frame: true,
-        title: 'Tambah Jabatan',
-        method:'POST',
-        width: 600,
-        renderTo: 'tambah-jabatan',
-        defaultType: 'textfield',
-        items: [
-        {
-            fieldLabel: 'Pilih Devisi',
-            queryMode: 'local',
-            typeAhead: true,
-            forceSelection: true,
-            displayField: 'nama_department', // <-- Add this 
-            valueField: 'kd_department',
-            type : 'text',
-            xtype : 'combo',
-            name: 'devisi',
-            emptyText: 'Pilih Devisi',
-            store : getdepstore,
-        },
-        {
-            fieldLabel: 'Nama jabatan',
-            type : 'text',
-            name: 'jabatan',
-            allowBlank: false,
-        },
-        ],
-
-        buttons: [
-        {
-            type: 'submit',
-            text: 'Tambah',
-            handler: function(){ insertjab(); }
-        }],
-
-    });
-      var insertjab = function(){
-      if(tambahjab.getForm().isValid()){
-                Ext.Msg.confirm("Confirmation", "Do you want to Tambah changes?", function(btnText){
-                if(btnText === "no"){
-                    Ext.Msg.alert("Alert", "You have confirmed 'Tambah'.");
-                }
-                else if(btnText === "yes"){
-                  tambahjab.getForm().submit({
-                  method:'POST',
-                  url: '<?php echo $this->baseUrl() ?>/hr/insertjab',
-                  waitMsg: 'Processing Request',
-                  failure:function(form, action){
-                    if(action.response.responseText == '"Success"'){
-                        Ext.Msg.alert('Berhasil', 'Tambah Department', Ext.emptyFn);
-                        storejab.load();                                          
-                    }else{
-                       Ext.Msg.alert('Salah', 'gagal Tambah', Ext.emptyFn);
-                    }
-                    tambahjab.getForm().reset();
-                }
-
-
-              });
-                            }
-                        }, this);
-        }
-          };
-
-        var gridjab = Ext.create('Ext.grid.Panel', {
-            plugins: [rowEditingJab],
-            store :storejab,
-            tbar: toolbarjab,
-            stateful: true,
-            collapsible: false,
-            multiSelect: true,
-            stateId: 'stateGrid',
-            columns: [
-                {
-                    header     :'Kode Jabatan',
-                    flex     : 1,
-                    sortable : false,
-                    dataIndex: 'kd_jabatan',
-                },
-                {
-                    header     :'Nama Department',
-                    width    : 75,
-                    sortable : false,
-                    dataIndex: 'nama_department',
-                    field: {
-                    xtype: 'textfield',
-                    queryMode: 'local',
-                    typeAhead: true,
-                    forceSelection: true,
-                    displayField: 'nama_department', // <-- Add this 
-                    valueField: 'kd_department',
-                    xtype : 'combo',
-                    name: 'devisi',
-                    emptyText: 'Pilih Devisi',
-                    store : getdepstore,
-                    }
-                },
-                 {
-                    header     :'Nama Jabatan',
-                    width    : 75,
-                    sortable : true,
-                    dataIndex: 'nama_jabatan',
-                    field: {
-                    xtype: 'textfield',
-                    }
-                },
-                {
-                    header     : 'Action',
-                    menuDisabled: false,
-                    sortable: false,
-                    xtype: 'actioncolumn',
-                    width: 50,
-                    items: [{
-                        icon   : '<?php echo $this->baseUrl(); ?>/extjs/examples/shared/icons/fam/delete.gif',  // Use a URL in the icon config
-                        tooltip: 'Delete',
-                        handler: function(grid, rowIndex, colIndex) {
-                           Ext.Msg.confirm("Confirmation", "Do you want to Delete changes?", function(btnText){
-                            if(btnText === "no"){
-                                Ext.Msg.alert("Alert", "You have confirmed 'No'.");
-                            }
-                            else if(btnText === "yes"){
-                                 var rec = storejab.getAt(rowIndex);
-                                 Ext.Ajax.request({
-                                    method: 'POST',
-                                    url: '<?php echo $this->baseUrl('/hr/deletejab/') ?>',
-                                    standardSubmit: true,
-                                    disableCaching: false,
-                                    id  : 'deleteget',
-                                    success: function(response, opts) {
-                                        storejab.load();
-                                        if(response.responseText == '"Failed"'){
-                                            Ext.Msg.alert('alert', 'Data Tidak');                                                   
-                                        }else{
-                                            Ext.Msg.alert('alert', 'Data Berhasil Di hapus');
-                                        }                    
-                                    },
-                                    failure: function() {
-                                        Ext.Msg.alert('', 'Gagal Terhubung Server Database');
-                                    },
-                                    params: {
-                                        action: 'delete',
-                                        name : rec.get('kd_department'),
-                                    }
-                                });
-                                
-                            }
-                        }, this);
-                     
-                            
-                        }
-                    }
-                    ]
-                }
-            ], 
-            height: 350,
-            width: 600,
-            title: 'Table Jabatan',
-            renderTo: 'grid-jabatan',
-            viewConfig: {
-            stripeRows: true,
-            enableTextSelection: true,
-            }
-        });
-    });
-    
-    var toolbarjab = Ext.create('Ext.toolbar.Toolbar', {
-    id : 'jab-id',
-    renderTo: document.body,
-    xtype: 'form',
-    method: 'POST',
-    width   : 50,
-    frame: true,
-    items: [{
-            text: 'Reload Data',
-            handler : function(){
-            storejab.load(); 
-            }
-        },
-        // begin using the right-justified button container
-        '->', // same as { xtype: 'tbfill' }
-        {
-        xtype     : 'combobox',
-        emptyText: 'Cari Berdasarkan',
-        id      : 'getjab',
-        store     : ['Kode',
-                    'Department',
-                    'Jabatan',
-                    ],
-        listeners: {
-              select: function(text){
-//               Ext.Msg.alert('alert', 'Cari Data ' +text.lastValue);  
-              // console.log(text.lastValue);
-              }
-            }
-        },
-        
-        {
-            xtype    : 'textfield',
-            name     : 'search',
-            type    : 'text',
-            emptyText: 'Cari Data',
-            id      : 'searchjab',
-        },          
-        {   
-            icon   : '<?php echo $this->baseUrl(); ?>/extjs/docs/resources/images/preview.png',
-            type: 'submit',
-            handler: function(){ 
-            Ext.Ajax.request({
-                method: 'GET',
-                url: '<?php echo $this->baseUrl('/hr/searchdep/') ?>',
-                standardSubmit: true,
-                disableCaching: false,
-                id  : 'cariget',
-                success: function(response, opts) {
-                    
-                    if(response.responseText == '"kosong"'){
-                        Ext.Msg.alert('alert', 'Data Tidak');                                                   
-                    }else{
-                        storejab.clearData();
-                        storejab.loadRawData(Ext.JSON.decode(response.responseText), true);
-                    }                    
-                },
-                failure: function() {
-                    Ext.Msg.alert('', 'failed');
-                },
-                params: {
-                    action: Ext.getCmp('getjab').getValue(),
-                    name : Ext.getCmp('searchjab').getValue(),
-                }
-            });
-        }        
-        }
-    ]
-}); 
-</script>
+    <?php echo $this->render('menu/admin.phtml'); ?>
+    <?php echo $this->render('menu/department.phtml'); ?>
+    <?php echo $this->render('menu/jabatan.phtml'); ?>
     </head>
 <body>
     <div style="display:none;">
@@ -1014,34 +139,33 @@
                     application layout.  Just like the combination examples, you can mix and match most layouts as
                 needed, so don't be afraid to experiment!</p>
                 <p>Select a layout from the tree to the left to begin.</p>
-                <div align="left" id="tambah-department"></div>
                 <br>
-                <div align="left" id="grid-department"></div>
-                <br>
-                <div align="left" id="tambah-jabatan"></div>
-                <br>
-                <div align="left" id="grid-jabatan"></div>
             </div>
         </div>
         <div id="department-div">
-            <h2>Department!</h2>
+            <div align="left" id="tambah-department"></div>
+            <br>
+            <div align="left" id="grid-department"></div>
         </div>
         <!-- Basic layouts -->
-        <div id="absolute-details">
+        <div id="department-details">
             <p class="details-info">When you select a layout from the tree, additional details will display here.</p>
         </div>
         <div id="jabatan-div">
-            <h2>List Jabatan!</h2>
-            <!--  <div align="left" id="tambah-admin"></div>
+            <div align="left" id="tambah-jabatan"></div>
             <br>
-            <div align="left" id="grid-admin"></div> -->
+            <div align="left" id="grid-jabatan"></div>
+        </div>
+        <div id="jabatan-details">
+            <p class="details-info">When you select a layout from the tree, additional details will display here.</p>
         </div>
         <div id="admin-div">
-            <h2>List admin!</h2>
-                    <br>
-        <div align="left" id="tambah-admin"></div>
-        <br>
-        <div align="left" id="grid-admin"></div>
+            <div align="left" id="tambah-admin"></div>
+            <br>
+            <div align="left" id="grid-admin"></div>
+        </div>
+        <div id="admin-details">
+            <p class="details-info">When you select a layout from the tree, additional details will display here.</p>
         </div>
     </div>
 </body>

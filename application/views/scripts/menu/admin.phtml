@@ -1,26 +1,5 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title><?php $this->title ?></title>
-    <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl(); ?>/extjs/resources/css/ext-all.css" />
-    <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl(); ?>/extjs/examples/shared/example.css" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
-    <!-- GC -->
-    <script type="text/javascript" src="<?php echo $this->baseUrl(); ?>/extjs/ext-all.js"></script>
-    <script type="text/javascript">
-    
-    Ext.require([
-    'Ext.grid.*',
-    'Ext.data.*',
-    'Ext.util.*',
-    'Ext.state.*'
-    ]);   
-    Ext.onReady(function() {
-        Ext.QuickTips.init();
-        // setup the state provider, all state information will be saved to a cookie
-        Ext.state.Manager.setProvider(Ext.create('Ext.state.CookieProvider'));
-
+<script type="text/javascript">
+	    Ext.onReady(function() {
         // sample static data for the store
         var sourceStore  = new Ext.data.JsonStore({
          extend: 'Ext.data.Model',
@@ -43,34 +22,35 @@
         });
         this.sourceStore = sourceStore; 
         var rowEditing = Ext.create('Ext.grid.plugin.RowEditing', {
-    	clicksToMoveEditor: 1,
-    	autoCancel: false,
-    	listeners: {
-		validateedit: function(editor,e,opt){
+        clicksToMoveEditor: 1,
+        autoCancel: false,
+        listeners: {
+        validateedit: function(editor,e,opt){
                         $.ajax({
                             url: '<?php echo $this->baseUrl()?>/admin/updatejson',
                             type: 'post',
                             data: { data : JSON.stringify( e.newValues ) }, // Our valid JSON string
                             success: function( data, status, xhr ) {
                                 Ext.Msg.alert("Alert", "Update Data Berhasil.");
+                                sourceStore.load(); 
                             },
                             error: function( xhr, status, error ) {
                                Ext.Msg.alert("Alert", "Update Data Gagal.");
                             }
                         });   
-		}
-	   }
+        }
+       }
         });
         var simple = Ext.widget({
          xtype: 'form',
         layout: 'form',
         collapsible: false,
-        id: 'simpleForm',
+        id: 'admin',
         frame: true,
         title: 'Tambah Akun',
         method:'POST',
         width: 600,
-        renderTo: 'tambah',
+        renderTo: 'tambah-admin',
         defaultType: 'textfield',
         items: [
         {
@@ -150,15 +130,7 @@
             renderTo: document.body,
             plugins: [rowEditing],
             store :sourceStore,
-            tbar: tolbar,
-            buttons: [
-            {
-            type: 'submit',
-            text: 'Logout',
-            handler: function(){ 
-            location.href = "<?php echo $this->baseUrl('/login/logout') ?>";
-            }
-            }],
+            tbar: toolbaradmin,
             stateful: true,
             collapsible: false,
             multiSelect: true,
@@ -250,7 +222,7 @@
             height: 350,
             width: 600,
             title: 'Table Admin',
-            renderTo: 'grid-example',
+            renderTo: 'grid-admin',
             viewConfig: {
             stripeRows: true,
             enableTextSelection: true,
@@ -258,7 +230,7 @@
         });
     });
     
-    var tolbar = Ext.create('Ext.toolbar.Toolbar', {
+    var toolbaradmin = Ext.create('Ext.toolbar.Toolbar', {
     id : 'form-id',
     renderTo: document.body,
     xtype: 'form',
@@ -270,25 +242,19 @@
             handler : function(){
             sourceStore.load(); 
             }
-    },
-        {   icon   : '<?php echo $this->baseUrl(); ?>/extjs/examples/shared/icons/fam/add.gif',
-            text: 'Tambah Data',
-            handler : function(){
-            location.href = "<?php echo $this->baseUrl() ?>/admin/tambah";  
-            }
-        },
+            },
         // begin using the right-justified button container
         '->', // same as { xtype: 'tbfill' }
         {
         xtype     : 'combobox',
-	emptyText: 'Cari Berdasarkan',
-        id      : 'get',
-	store     : ['Kode',
-                    'Nama',
-                    'Email',
-                    'Nomor'
-                    ],
-        listeners: {
+        emptyText: 'Cari Berdasarkan',
+            id      : 'get',
+        store     : ['Kode',
+                        'Nama',
+                        'Email',
+                        'Nomor'
+                        ],
+            listeners: {
               select: function(text){
 //               Ext.Msg.alert('alert', 'Cari Data ' +text.lastValue);  
               // console.log(text.lastValue);
@@ -316,7 +282,7 @@
                 success: function(response, opts) {
                     
                     if(response.responseText == '"kosong"'){
-                    	Ext.Msg.alert('alert', 'Data Tidak');                                                   
+                        Ext.Msg.alert('alert', 'Data Tidak');                                                   
                     }else{
                         sourceStore.clearData();
                         sourceStore.loadRawData(Ext.JSON.decode(response.responseText), true);
@@ -336,11 +302,3 @@
     ]
 }); 
 </script>
-</head>
-<body>
-    <h1 align="center">Hai, <?php echo $this->user ?></h1>
-    <div align="center" id="tambah"></div>
-    <br>
-    <div align="center" id="grid-example"></div>
-</body>
-</html>

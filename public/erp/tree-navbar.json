@@ -1,0 +1,23 @@
+{ 
+text: '.',
+children: [{
+    text:'Human Resource',
+    children:[{
+        text:'Department',
+        id:'department',
+        leaf:true
+    },{
+        text:'Jabatan',
+        id:'jabatan',
+        leaf:true
+    }]
+},{
+    text:'Managemnt User',
+    children:[{
+        text:'List User',
+        id:'admin',
+        leaf:true
+    }]
+}
+]
+}
