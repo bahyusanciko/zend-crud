@@ -5,7 +5,6 @@ class HrController extends Zend_Controller_Action{
         $this->db = Zend_Db_Table::getDefaultAdapter();
         $this->model = new Application_Model_Hr();
     }
-
     public function indexAction(){
        $this->redirect('menu');
     }
@@ -65,8 +64,8 @@ class HrController extends Zend_Controller_Action{
     }
     public function updatedepAction(){
         header('Content-Type: text/plain');
-        $test = $_POST['data']; // Don't forget the encoding
-        $decoded = json_decode($test, true);
+        $post = $_POST['data']; // Don't forget the encoding
+        $decoded = json_decode($post, true);
         // die(print_r($decoded));
         $data = array(
             'kd_department' => $decoded['kd_department'],
@@ -82,6 +81,20 @@ class HrController extends Zend_Controller_Action{
         echo json_encode($data);
         die();
         }
+    }
+    public function deletedepAction(){
+        $depId = $_POST['name'];
+        // die(print_r($_POST));
+        $cek = $this->model->delDep($depId);
+        if ($cek){
+        $data = "Success";
+            echo json_encode($data);
+            die();
+        }else{
+            $data = "Failed";
+            echo json_encode($data);
+            die();
+        }      
     }
 	public function insertjabAction(){
     	$data = array(
@@ -121,6 +134,52 @@ class HrController extends Zend_Controller_Action{
         echo json_encode($data);
         die();
         }
+    }
+    public function searchjabAction(){
+        // die(print_r($_GET));
+        $action1 = $_GET['action1'];
+        $action2 = $_GET['action2'];
+        $search1 = $_GET['search1'];
+        $search2 = $_GET['search2'];
+        if ($action1 === 'nama_department' || $action2 === 'nama_department') {
+            $sqlcek = $this->db->query('SELECT * FROM tbl_jabatan LEFT JOIN tbl_department on tbl_jabatan.kd_department = tbl_department.kd_department WHERE tbl_jabatan.'.$action1.' LIKE "'.$search2.'%" AND tbl_department.'.$action2.' = "'.$search2.'%" ')->fetchAll();
+        }else{
+             $sqlcek = $this->db->query('SELECT * FROM tbl_jabatan LEFT JOIN tbl_department on tbl_jabatan.kd_department = tbl_department.kd_department WHERE tbl_jabatan.kd_jabatan = "'.$search1.'" ')->fetchAll();
+        }
+        print_r($sqlcek);
+        die();
+        // }elseif ($_GET['action'] === 'Department') {
+        //     $sqlcek = $this->db->query('SELECT * FROM tbl_jabatan LEFT JOIN tbl_department on tbl_jabatan.kd_department = tbl_department.kd_department WHERE tbl_department.nama_department LIKE "'.$id.'%" ')->fetchAll();
+        // }elseif ($_GET['action'] === 'Jabatan') {
+        //     $sqlcek = $this->db->query('SELECT * FROM tbl_jabatan LEFT JOIN tbl_department on tbl_jabatan.kd_department = tbl_department.kd_department WHERE tbl_jabatan.nama_jabatan LIKE "'.$id.'%" ')->fetchAll();
+        // }else{
+        //     $error = 'kosong';
+        //     echo json_encode($error);
+        //     die();
+        // }
+        // if ($sqlcek) {
+        //     $itemArray['jab'] = array_values($sqlcek);
+        //     echo json_encode($itemArray,JSON_PRETTY_PRINT);
+        //     die();
+        // }else{
+        //     $error = 'kosong';
+        //     echo json_encode($error);
+        //     die();
+        // }
+    }
+    public function deletejabAction(){
+        $jabId = $_POST['name'];
+        // die(print_r($_POST));
+        $cek = $this->model->delJab($jabId);
+        if ($cek){
+        $data = "Success";
+            echo json_encode($data);
+            die();
+        }else{
+            $data = "Failed";
+            echo json_encode($data);
+            die();
+        }      
     }
 }
 

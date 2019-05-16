@@ -27,6 +27,7 @@
                    {name: 'nama_department',type: 'string'},
                 ],
           autoLoad: true,
+          autoDestroy: true,
           proxy:{
             type:'ajax',
             url:'<?php echo $this->baseUrl('/hr/dep'); ?>',
@@ -34,9 +35,9 @@
                  type:'json',
                  root:'dep'
                 }
-            }
-
+            },
         });
+        this.getdepstore = getdepstore; 
         this.storejab = storejab; 
         var rowEditingJab = Ext.create('Ext.grid.plugin.RowEditing', {
         clicksToMoveEditor: 1,
@@ -55,8 +56,8 @@
                                Ext.Msg.alert("Alert", "Update Data Gagal.");
                             }
                         });   
+                     }
         }
-       }
         });
         var tambahjab = Ext.widget({
         xtype: 'form',
@@ -65,22 +66,30 @@
         frame: true,
         title: 'Tambah Jabatan',
         method:'POST',
-        width: 600,
+        width: 750,
         renderTo: 'tambah-jabatan',
         defaultType: 'textfield',
         items: [
         {
             fieldLabel: 'Pilih Devisi',
-            queryMode: 'local',
+            queryMode: 'remote',
             typeAhead: true,
+            id : 'combodev',
             forceSelection: true,
             displayField: 'nama_department', // <-- Add this 
             valueField: 'kd_department',
             type : 'text',
             xtype : 'combo',
             name: 'devisi',
+            triggerAction: 'all',
             emptyText: 'Pilih Devisi',
             store : getdepstore,
+            selectOnFocus: true, 
+            listeners: {
+                expand: function() {
+                    getdepstore.load();
+                }
+            }
         },
         {
             fieldLabel: 'Nama jabatan',
@@ -203,7 +212,7 @@
                                     },
                                     params: {
                                         action: 'delete',
-                                        name : rec.get('kd_department'),
+                                        name : rec.get('kd_jabatan'),
                                     }
                                 });
                                 
@@ -217,7 +226,7 @@
                 }
             ], 
             height: 350,
-            width: 600,
+            width: 750,
             title: 'Table Jabatan',
             renderTo: 'grid-jabatan',
             viewConfig: {
@@ -226,7 +235,23 @@
             }
         });
     });
-    
+    var searchdep  = new Ext.data.JsonStore({
+         extend: 'Ext.data.Model',
+                fields: [
+                   {name: 'kd_search',type: 'string'},
+                   {name: 'nama_search',type: 'string'},
+                ],
+          autoLoad: true,
+          autoDestroy: true,
+          proxy:{
+            type:'ajax',
+            url:'<?php echo $this->baseUrl('/erp/tree-search.json'); ?>',
+            reader:{
+                 type:'json',
+                 root:'dep'
+                }
+            },
+        });
     var toolbarjab = Ext.create('Ext.toolbar.Toolbar', {
     id : 'jab-id',
     renderTo: document.body,
@@ -241,15 +266,34 @@
             }
         },
         // begin using the right-justified button container
-        '->', // same as { xtype: 'tbfill' }
         {
         xtype     : 'combobox',
         emptyText: 'Cari Berdasarkan',
-        id      : 'getjab',
-        store     : ['Kode',
-                    'Department',
-                    'Jabatan',
-                    ],
+        id      : 'getjab1',
+        store     : searchdep,
+        displayField: 'nama_search', // <-- Add this 
+        valueField: 'kd_search',
+        listeners: {
+              select: function(text){
+//               Ext.Msg.alert('alert', 'Cari Data ' +text.lastValue);  
+              // console.log(text.lastValue);
+              }
+            }
+        }, 
+        {
+            xtype    : 'textfield',
+            name     : 'search',
+            type    : 'text',
+            emptyText: 'Cari Data',
+            id      : 'searchjab1',
+        },
+        {
+        xtype     : 'combobox',
+        emptyText: 'Cari Berdasarkan',
+        id      : 'getjab2',
+        store     : searchdep,
+        displayField: 'nama_search', // <-- Add this 
+        valueField: 'kd_search',
         listeners: {
               select: function(text){
 //               Ext.Msg.alert('alert', 'Cari Data ' +text.lastValue);  
@@ -263,7 +307,7 @@
             name     : 'search',
             type    : 'text',
             emptyText: 'Cari Data',
-            id      : 'searchjab',
+            id      : 'searchjab2',
         },          
         {   
             icon   : '<?php echo $this->baseUrl(); ?>/extjs/docs/resources/images/preview.png',
@@ -271,7 +315,7 @@
             handler: function(){ 
             Ext.Ajax.request({
                 method: 'GET',
-                url: '<?php echo $this->baseUrl('/hr/searchdep/') ?>',
+                url: '<?php echo $this->baseUrl('/hr/searchjab/') ?>',
                 standardSubmit: true,
                 disableCaching: false,
                 id  : 'cariget',
@@ -288,8 +332,10 @@
                     Ext.Msg.alert('', 'failed');
                 },
                 params: {
-                    action: Ext.getCmp('getjab').getValue(),
-                    name : Ext.getCmp('searchjab').getValue(),
+                    action1 : Ext.getCmp('getjab1').getValue(),
+                    action2 : Ext.getCmp('getjab2').getValue(),
+                    search1 : Ext.getCmp('searchjab1').getValue(),
+                    search2 : Ext.getCmp('searchjab2').getValue(),
                 }
             });
         }        

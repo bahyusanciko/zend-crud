@@ -14,7 +14,7 @@ class Application_Model_Admin extends Zend_Db_Table
     }
     public function cekAdmin($id='')
     {
-    	$result = $this->db->query('select * from tbl_admin where username_admin = "'.$id.'"')->fetch();
+    	$result = $this->db->query('select * from tbl_admin where username_admin LIKE "%'.$id.'%"')->fetch();
     	// die(print_r($result));
     	return $result;
     }
@@ -41,7 +41,7 @@ class Application_Model_Admin extends Zend_Db_Table
         return $result;
     }
     function cariAdmin($id) {
-        $result = $this->db->query('select * from tbl_admin where kd_admin like "'.$id.'%"')->fetchAll();
+        $result = $this->db->query('select * from tbl_admin where kd_admin like "%'.$id.'%"')->fetchAll();
     	// die(print_r($result));
     	return $result;
     }
