@@ -30,7 +30,6 @@
             // Gets all layouts examples
             var layoutExamples = [];
             Ext.Object.each(getHrLayouts(), function(name, example) {
-                // console.log(example)
                 layoutExamples.push(example);
             });
             
@@ -73,14 +72,16 @@
                 minSize: 150,
                 rootVisible: false,
                 autoScroll: true,
-                store: store
+                store: store,
+
             });
-            
             // Assign the changeLayout function to be called on tree node click.
             treePanel.getSelectionModel().on('select', function(selModel, record) {
+
                 if (record.get('leaf')) {
                     Ext.getCmp('content-panel').layout.setActiveItem(record.getId() + '-panel');
-                }
+                        Ext.getCmp('content-panel').load();
+                }   
             });
             
             // This is the Details panel that contains the description for each example layout.
@@ -123,6 +124,7 @@
                 renderTo: Ext.getBody()
             });
         });
+
 </script>
     <?php echo $this->render('menu/admin.phtml'); ?>
     <?php echo $this->render('menu/department.phtml'); ?>
@@ -136,7 +138,6 @@
             <div style="margin-left:100px;">
                 <h2>Welcome!</h2>
                 <p>This is QDC ERP on web, current state : Production.</p>
-                <br>
             </div>
         </div>
         <div id="department-div">

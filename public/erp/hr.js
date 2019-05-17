@@ -59,6 +59,7 @@ function getHrLayouts() {
             renderTo: Ext.getBody()
         },
 
-     
+        
     };
+    
 }

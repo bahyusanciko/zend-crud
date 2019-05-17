@@ -142,12 +142,15 @@ class HrController extends Zend_Controller_Action{
         $search1 = $_GET['search1'];
         $search2 = $_GET['search2'];
         if ($action1 === 'nama_department' || $action2 === 'nama_department') {
-            $sqlcek = $this->db->query('SELECT * FROM tbl_jabatan LEFT JOIN tbl_department on tbl_jabatan.kd_department = tbl_department.kd_department WHERE tbl_jabatan.'.$action1.' LIKE "'.$search2.'%" AND tbl_department.'.$action2.' = "'.$search2.'%" ')->fetchAll();
+            $sqlcek = $this->db->query('SELECT * FROM tbl_jabatan LEFT JOIN tbl_department on tbl_jabatan.kd_department = tbl_department.kd_department WHERE tbl_jabatan.kd_jabatan LIKE "'.$search1.'%" AND tbl_department.nama_department LIKE "'.$search2.'%"')->fetchAll();
+            // echo "string";
+            // die();
         }else{
-             $sqlcek = $this->db->query('SELECT * FROM tbl_jabatan LEFT JOIN tbl_department on tbl_jabatan.kd_department = tbl_department.kd_department WHERE tbl_jabatan.kd_jabatan = "'.$search1.'" ')->fetchAll();
+             $sqlcek = $this->db->query('SELECT * FROM tbl_jabatan LEFT JOIN tbl_department on tbl_jabatan.kd_department = tbl_department.kd_department WHERE tbl_jabatan.kd_jabatan LIKE "'.$search1.'%" AND tbl_jabatan.nama_jabatan LIKE "'.$search2.'%"')->fetchAll();
+             // echo "string";
         }
-        print_r($sqlcek);
-        die();
+        // print_r($sqlcek);
+        // die();
         // }elseif ($_GET['action'] === 'Department') {
         //     $sqlcek = $this->db->query('SELECT * FROM tbl_jabatan LEFT JOIN tbl_department on tbl_jabatan.kd_department = tbl_department.kd_department WHERE tbl_department.nama_department LIKE "'.$id.'%" ')->fetchAll();
         // }elseif ($_GET['action'] === 'Jabatan') {
@@ -157,15 +160,15 @@ class HrController extends Zend_Controller_Action{
         //     echo json_encode($error);
         //     die();
         // }
-        // if ($sqlcek) {
-        //     $itemArray['jab'] = array_values($sqlcek);
-        //     echo json_encode($itemArray,JSON_PRETTY_PRINT);
-        //     die();
-        // }else{
-        //     $error = 'kosong';
-        //     echo json_encode($error);
-        //     die();
-        // }
+        if ($sqlcek) {
+            $itemArray['jab'] = array_values($sqlcek);
+            echo json_encode($itemArray,JSON_PRETTY_PRINT);
+            die();
+        }else{
+            $error = 'kosong';
+            echo json_encode($error,JSON_PRETTY_PRINT);
+            die();
+        }
     }
     public function deletejabAction(){
         $jabId = $_POST['name'];
