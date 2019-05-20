@@ -14,5 +14,16 @@ class MenuController extends Zend_Controller_Action{
     {
         $this->view->user =  $this->session->user['nama_admin'];
     }
+    public function departmentAction($value=''){
+        
+    }
+    public function jabatanAction($value='')
+    {
+        
+    }
+    public function adminAction($value='')
+    {
+        # code...
+    }
 }
 

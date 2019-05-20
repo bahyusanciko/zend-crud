@@ -73,14 +73,21 @@
                 rootVisible: false,
                 autoScroll: true,
                 store: store,
+                loadMask: {msg: 'Loading...'},
+
 
             });
             // Assign the changeLayout function to be called on tree node click.
             treePanel.getSelectionModel().on('select', function(selModel, record) {
-
+                
                 if (record.get('leaf')) {
                     Ext.getCmp('content-panel').layout.setActiveItem(record.getId() + '-panel');
-                        Ext.getCmp('content-panel').load();
+                    var itemid = record.get('id');
+                    Ext.get("content-panel").load({
+                                                url:"<?php echo $this->baseUrl('/menu/') ?>" + itemid,
+                                                text:"loading",
+                                                scripts:true
+                                        });
                 }   
             });
             
@@ -126,9 +133,9 @@
         });
 
 </script>
-    <?php echo $this->render('menu/admin.phtml'); ?>
-    <?php echo $this->render('menu/department.phtml'); ?>
-    <?php echo $this->render('menu/jabatan.phtml'); ?>
+<!-- <?php echo $this->render('menu/admin.phtml');?>
+    <?php echo $this->render('menu/department.phtml');?>
+    <?php echo $this->render('menu/jabatan.phtml'); ?> -->
     </head>
 <body>
     <div style="display:none;">
@@ -141,29 +148,13 @@
             </div>
         </div>
         <div id="department-div">
-            <div align="left" id="tambah-department"></div>
-            <br>
-            <div align="left" id="grid-department"></div>
-        </div>
-        <!-- Basic layouts -->
-        <div id="department-details">
-            <p class="details-info">When you select a layout from the tree, additional details will display here.</p>
+            
         </div>
         <div id="jabatan-div">
-            <div align="left" id="tambah-jabatan"></div>
-            <br>
-            <div align="left" id="grid-jabatan"></div>
-        </div>
-        <div id="jabatan-details">
-            <p class="details-info">When you select a layout from the tree, additional details will display here.</p>
+          
         </div>
         <div id="admin-div">
-            <div align="left" id="tambah-admin"></div>
-            <br>
-            <div align="left" id="grid-admin"></div>
-        </div>
-        <div id="admin-details">
-            <p class="details-info">When you select a layout from the tree, additional details will display here.</p>
+        
         </div>
     </div>
 </body>

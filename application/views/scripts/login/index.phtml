@@ -70,6 +70,8 @@ Ext.onReady(function() {
 
         buttons: [{
         	type: 'submit',
+            formBind: true,
+            disabled: true,
             text: 'login',
             handler: function(){ doLogin(); }
         }]
