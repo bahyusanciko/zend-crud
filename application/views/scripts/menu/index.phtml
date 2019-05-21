@@ -12,11 +12,8 @@
         <!-- GC -->
         <!-- page specific -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
-        <script type="text/javascript" src="<?php echo $this->baseUrl() ?>/erp/hr.js"></script>
-        <script type="text/javascript" src="<?php echo $this->baseUrl() ?>/erp/admin.js"></script>
         <script type="text/javascript">
         Ext.Loader.setPath('Ext.ux', '<?php echo $this->baseUrl('/extjs/examples/ux/') ?>');
-
         //
         // This is the main layout definition.
         //
@@ -28,14 +25,7 @@
             // on the panel body without affecting the body's box itself.  This element is created on
             // initial use and cached in this var for subsequent access.            
             // Gets all layouts examples
-            var layoutExamples = [];
-            Ext.Object.each(getHrLayouts(), function(name, example) {
-                layoutExamples.push(example);
-            });
-            
-            Ext.Object.each(getAdminLayouts(), function(name, example){
-                layoutExamples.push(example);
-            });
+
             
             // This is the main content center region that will contain each example layout panel.
             // It will be implemented as a CardLayout since it will contain multiple panels with
@@ -44,11 +34,11 @@
             var contentPanel = {
                  id: 'content-panel',
                  region: 'center', // this is what makes this panel into a region within the containing layout
-                 layout: 'card',
-                 margins: '2 5 5 0',
-                 activeItem: 0,
-                 border: false,
-                 items: layoutExamples
+                 layout: 'fit',
+                 title: 'Home Page',
+                 autoScroll: true,
+                 bodyPadding: 15,
+                 contentEl: 'start-div',
             };
              
             var store = Ext.create('Ext.data.TreeStore', {
@@ -81,7 +71,6 @@
             treePanel.getSelectionModel().on('select', function(selModel, record) {
                 
                 if (record.get('leaf')) {
-                    Ext.getCmp('content-panel').layout.setActiveItem(record.getId() + '-panel');
                     var itemid = record.get('id');
                     Ext.get("content-panel").load({
                                                 url:"<?php echo $this->baseUrl('/menu/') ?>" + itemid,
@@ -146,15 +135,6 @@
                 <h2>Welcome!</h2>
                 <p>This is QDC ERP on web, current state : Production.</p>
             </div>
-        </div>
-        <div id="department-div">
-            
-        </div>
-        <div id="jabatan-div">
-          
-        </div>
-        <div id="admin-div">
-        
         </div>
     </div>
 </body>

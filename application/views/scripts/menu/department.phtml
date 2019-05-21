@@ -1,5 +1,6 @@
 <script type="text/javascript">
         Ext.onReady(function() {
+        Ext.tip.QuickTipManager.init();
 
         // sample static data for the store
         var storedep  = new Ext.data.JsonStore({
@@ -40,15 +41,15 @@
             }
         }
         });
-        var tambahdep = Ext.widget({
-         xtype: 'form',
+        var tambahdep  = new Ext.form.FormPanel ({
+        renderTo : 'tambah-dep',
+        xtype: 'form',
         layout: 'form',
         collapsible: false,
         frame: true,
         title: 'Tambah Department',
         method:'POST',
         width: 600,
-        renderTo: 'tambah-department',
         defaultType: 'textfield',
         items: [
         {
@@ -66,7 +67,7 @@
             handler: function(){ insertdep(); }
         }],
 
-    });
+         }); 
       var insertdep = function(){
       if(tambahdep.getForm().isValid()){
                 Ext.Msg.confirm("Confirmation", "Do you want to Tambah changes?", function(btnText){
@@ -98,7 +99,7 @@
         var griddep = Ext.create('Ext.grid.Panel', {
             plugins: [rowEditingDep],
             store :storedep,
-            tbar: toolbardep,
+            tbar : toolbardep,
             stateful: true,
             collapsible: false,
             multiSelect: true,
@@ -171,17 +172,16 @@
             height: 350,
             width: 600,
             title: 'Table Department',
-            renderTo: 'grid-department',
+            renderTo: 'grid-dep',
             viewConfig: {
             stripeRows: true,
             enableTextSelection: true,
             }
         });
     });
-    
     var toolbardep = Ext.create('Ext.toolbar.Toolbar', {
     id : 'dep-id',
-    renderTo: document.body,
+    // renderTo: document.body,
     xtype: 'form',
     method: 'POST',
     width   : 50,
@@ -246,9 +246,28 @@
         }        
         }
     ]
-}); 
+});
+    var container = new Ext.Container({
+            items: [
+                {
+                    title: 'department',
+                    layout: 'fit',
+                    autoScroll: true,
+                    bodyPadding: 15,
+                    autoScroll: true,
+                    contentEl : 'department-div'
+                }
+            ],
+            autoWidth: true,
+            height: 400,
+            renderTo: 'container-department'
+        });
 </script>
- <div align="left" id="tambah-department"></div>
-            <br>
-            <div align="left" id="grid-department"></div>
-        
+<div id="container-department">
+    <div id="department-div">
+        <div id="tambah-dep"></div>
+        <br>
+        <div id="grid-dep"></div>
+    </div>
+</div>
+            

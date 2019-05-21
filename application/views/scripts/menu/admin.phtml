@@ -42,7 +42,7 @@
        }
         });
         var simple = Ext.widget({
-         xtype: 'form',
+        xtype: 'form',
         layout: 'form',
         collapsible: false,
         id: 'admin',
@@ -50,7 +50,7 @@
         title: 'Tambah Akun',
         method:'POST',
         width: 600,
-        renderTo: 'tambah-admin',
+        renderTo : 'tambah-admin',
         defaultType: 'textfield',
         items: [
         {
@@ -222,7 +222,7 @@
             height: 350,
             width: 600,
             title: 'Table Admin',
-            renderTo: 'grid-admin',
+            renderTo : 'grid-admin',
             viewConfig: {
             stripeRows: true,
             enableTextSelection: true,
@@ -231,8 +231,6 @@
     });
     
     var toolbaradmin = Ext.create('Ext.toolbar.Toolbar', {
-    id : 'form-id',
-    renderTo: document.body,
     xtype: 'form',
     method: 'POST',
     width   : 50,
@@ -301,8 +299,27 @@
         }
     ]
 }); 
+    var container = new Ext.Container({
+            items: [
+                {
+                    title: 'admin',
+                    layout: 'fit',
+                    autoScroll: true,
+                    bodyPadding: 15,
+                    contentEl : 'admin-div'
+
+                }
+            ],
+            autoWidth: true,
+            height: 400,
+            renderTo: 'container-admin'
+        });
 </script>
-<div align="left" id="tambah-admin"></div>
-            <br>
-            <div align="left" id="grid-admin"></div>
-            
+<div id="container-admin">
+    <div id="admin-div">
+        <div id="tambah-admin"></div>
+        <br>
+        <div id="grid-admin"></div>
+    </div>
+</div>
+         

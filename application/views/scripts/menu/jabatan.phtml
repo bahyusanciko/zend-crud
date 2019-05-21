@@ -1,6 +1,8 @@
 <script type="text/javascript">
 	 Ext.onReady(function() {
 
+        Ext.tip.QuickTipManager.init();
+
         // sample static data for the store
         var storejab  = new Ext.data.JsonStore({
          extend: 'Ext.data.Model',
@@ -59,7 +61,7 @@
                      }
         }
         });
-        var tambahjab = Ext.widget({
+        var tambahjab = new Ext.form.FormPanel ({
         xtype: 'form',
         layout: 'form',
         collapsible: false,
@@ -67,7 +69,7 @@
         title: 'Tambah Jabatan',
         method:'POST',
         width: 750,
-        renderTo: 'tambah-jabatan',
+        renderTo: 'tambah-jab',
         defaultType: 'textfield',
         items: [
         {
@@ -120,7 +122,7 @@
                   waitMsg: 'Processing Request',
                   failure:function(form, action){
                     if(action.response.responseText == '"Success"'){
-                        Ext.Msg.alert('Berhasil', 'Tambah Department', Ext.emptyFn);
+                        Ext.Msg.alert('Berhasil', 'Tambah Jabatan', Ext.emptyFn);
                         storejab.load();                                          
                     }else{
                        Ext.Msg.alert('Salah', 'gagal Tambah', Ext.emptyFn);
@@ -228,7 +230,7 @@
             height: 350,
             width: 780,
             title: 'Table Jabatan',
-            renderTo: 'grid-jabatan',
+            renderTo: 'grid-jab',
             viewConfig: {
             stripeRows: true,
             enableTextSelection: true,
@@ -253,8 +255,6 @@
             },
         });
     var toolbarjab = Ext.create('Ext.toolbar.Toolbar', {
-    id : 'jab-id',
-    renderTo: document.body,
     xtype: 'form',
     method: 'POST',
     width   : 50,
@@ -342,7 +342,26 @@
         }
     ]
 }); 
+    var container = new Ext.Container({
+            items: [
+                {
+                    title: 'jabatan',
+                    layout: 'fit',
+                    autoScroll: true,
+                    bodyPadding: 15,
+                    contentEl : 'jabatan-div'
+                }
+            ],
+            autoWidth: true,
+            height: 400,
+            renderTo: 'container-jabatan'
+        });
 </script>
- <div align="left" id="tambah-jabatan"></div>
-            <br>
-<div align="left" id="grid-jabatan"></div>
+<div id="container-jabatan">
+    <div id="jabatan-div">
+        <div id="tambah-jab"></div>
+        <br>
+        <div id="grid-jab"></div>
+    </div>
+</div>
+          
