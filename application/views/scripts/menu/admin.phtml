@@ -125,12 +125,83 @@
 
         }
           };
-
+        var combo = new Ext.form.ComboBox({
+            store: ['Kode',
+                    'Nama',
+                    'Email',
+                    'Nomor'
+                    ],
+            typeAhead: true,
+            mode: 'local',
+            emptyText: 'Cari Berdasarkan',
+            triggerAction: 'all',
+            selectOnFocus: true,
+            name: 'option',
+            width: 100,
+            style: 'margin-left: 5px',
+            id: 'get'
+        });
         var grid = Ext.create('Ext.grid.Panel', {
             renderTo: document.body,
             plugins: [rowEditing],
             store :sourceStore,
-            tbar: toolbaradmin,
+            bbar: new Ext.PagingToolbar({
+                id: 'paging',
+                pageSize: 30,
+                store: sourceStore,
+                displayInfo: true,
+                displayMsg: 'Displaying data {0} - {1} of {2}',
+                emptyMsg: "No data to display"
+            }),
+            tbar: [
+                {
+                    xtype: 'tbtext',
+                    text: 'Search By',
+                    style: 'margin-left: 5px'
+                },
+                combo, 
+                {
+                    xtype: 'textfield',
+                    id: 'search',
+                    style: 'margin-left: 10px;margin-right:10px',
+                    enableKeyEvents: true,   
+                },
+                {   
+                    icon   : '<?php echo $this->baseUrl(); ?>/extjs/docs/resources/images/preview.png',
+                    type: 'submit',
+                    handler: function(){ 
+                    Ext.Ajax.request({
+                        method: 'GET',
+                        url: '<?php echo $this->baseUrl('/admin/search/') ?>',
+                        standardSubmit: true,
+                        disableCaching: false,
+                        id  : 'cariget',
+                        success: function(response, opts) {
+                            
+                            if(response.responseText == '"kosong"'){
+                                Ext.Msg.alert('alert', 'Data Tidak');                                                   
+                            }else{
+                                sourceStore.clearData();
+                                sourceStore.loadRawData(Ext.JSON.decode(response.responseText), true);
+
+                            }                    
+                        },
+                        failure: function() {
+                            Ext.Msg.alert('', 'failed');
+                        },
+                        params: {
+                            action: Ext.getCmp('get').getValue(),
+                            name : Ext.getCmp('search').getValue(),
+                        }
+                    });
+                }        
+            },
+            {
+                text: 'Reload Data',
+                handler: refreshData,
+                scope: this
+            },
+            ],
             stateful: true,
             collapsible: false,
             multiSelect: true,
@@ -228,77 +299,83 @@
             enableTextSelection: true,
             }
         });
+    function refreshData()
+        {
+            sourceStore.clearFilter();
+            Ext.getCmp('search').setValue('');
+            Ext.getCmp('paging').doRefresh();
+        }
     });
     
-    var toolbaradmin = Ext.create('Ext.toolbar.Toolbar', {
-    xtype: 'form',
-    method: 'POST',
-    width   : 50,
-    frame: true,
-    items: [{
-            text: 'Reload Data',
-            handler : function(){
-            sourceStore.load(); 
-            }
-            },
-        // begin using the right-justified button container
-        '->', // same as { xtype: 'tbfill' }
-        {
-        xtype     : 'combobox',
-        emptyText: 'Cari Berdasarkan',
-            id      : 'get',
-        store     : ['Kode',
-                        'Nama',
-                        'Email',
-                        'Nomor'
-                        ],
-            listeners: {
-              select: function(text){
-//               Ext.Msg.alert('alert', 'Cari Data ' +text.lastValue);  
-              // console.log(text.lastValue);
-              }
-            }
-        },
+//     var toolbaradmin = Ext.create('Ext.toolbar.Toolbar', {
+//     xtype: 'form',
+//     method: 'POST',
+//     width   : 50,
+//     frame: true,
+//     items: [{
+//             text: 'Reload Data',
+//             handler : function(){
+//             sourceStore.load(); 
+//             }
+//             },
+//         // begin using the right-justified button container
+//         '->', // same as { xtype: 'tbfill' }
+//         {
+//         xtype     : 'combobox',
+//         emptyText: 'Cari Berdasarkan',
+//             id      : 'get',
+//         store     : ['Kode',
+//                         'Nama',
+//                         'Email',
+//                         'Nomor'
+//                         ],
+//             listeners: {
+//               select: function(text){
+// //               Ext.Msg.alert('alert', 'Cari Data ' +text.lastValue);  
+//               // console.log(text.lastValue);
+//               }
+//             }
+//         },
         
-        {
-            xtype    : 'textfield',
-            name     : 'search',
-            type    : 'text',
-            emptyText: 'Cari Data',
-            id      : 'search',
-        },          
-        {   
-            icon   : '<?php echo $this->baseUrl(); ?>/extjs/docs/resources/images/preview.png',
-            type: 'submit',
-            handler: function(){ 
-            Ext.Ajax.request({
-                method: 'GET',
-                url: '<?php echo $this->baseUrl('/admin/search/') ?>',
-                standardSubmit: true,
-                disableCaching: false,
-                id  : 'cariget',
-                success: function(response, opts) {
+//         {
+//             xtype    : 'textfield',
+//             name     : 'search',
+//             type    : 'text',
+//             emptyText: 'Cari Data',
+//             id      : 'search',
+//         },          
+//         {   
+//             icon   : '<?php echo $this->baseUrl(); ?>/extjs/docs/resources/images/preview.png',
+//             type: 'submit',
+//             handler: function(){ 
+//             Ext.Ajax.request({
+//                 method: 'GET',
+//                 url: '<?php echo $this->baseUrl('/admin/search/') ?>',
+//                 standardSubmit: true,
+//                 disableCaching: false,
+//                 id  : 'cariget',
+//                 success: function(response, opts) {
                     
-                    if(response.responseText == '"kosong"'){
-                        Ext.Msg.alert('alert', 'Data Tidak');                                                   
-                    }else{
-                        sourceStore.clearData();
-                        sourceStore.loadRawData(Ext.JSON.decode(response.responseText), true);
+//                     if(response.responseText == '"kosong"'){
+//                         Ext.Msg.alert('alert', 'Data Tidak');                                                   
+//                     }else{
+//                         sourceStore.clearData();
+//                         sourceStore.loadRawData(Ext.JSON.decode(response.responseText), true);
 
-                    }                    
-                },
-                failure: function() {
-                    Ext.Msg.alert('', 'failed');
-                },
-                params: {
-                    action: Ext.getCmp('get').getValue(),
-                    name : Ext.getCmp('search').getValue(),
-                }
-            });
-        }        
-        }
-    ]
-}); 
+//                     }                    
+//                 },
+//                 failure: function() {
+//                     Ext.Msg.alert('', 'failed');
+//                 },
+//                 params: {
+//                     action: Ext.getCmp('get').getValue(),
+//                     name : Ext.getCmp('search').getValue(),
+//                 }
+//             });
+//         }        
+//         }
+//     ]
+// }); 
     var container = new Ext.Container({
             items: [
                 {

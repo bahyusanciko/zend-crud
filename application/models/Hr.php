@@ -16,7 +16,7 @@ class Application_Model_Hr extends Zend_Db_Table
         return $result;
     }
     function cariDep($id=''){
-    	$result = $this->db->query('SELECT * from tbl_department where kd_department LIKE "'.$id.'%"')->fetchAll();
+    	$result = $this->db->query('SELECT * from tbl_department where kd_department LIKE "%'.$id.'%"')->fetchAll();
     	// die(print_r($result));
     	return $result;
     }
@@ -48,7 +48,7 @@ class Application_Model_Hr extends Zend_Db_Table
         return $result;
     }
     function cariJab($id=''){
-        $result = $this->db->query('SELECT * FROM tbl_jabatan LEFT JOIN tbl_department on tbl_jabatan.kd_department = tbl_department.kd_department WHERE tbl_jabatan.kd_jabatan LIKE "'.$id.'%" ')->fetchAll();
+        $result = $this->db->query('SELECT * FROM tbl_jabatan LEFT JOIN tbl_department on tbl_jabatan.kd_department = tbl_department.kd_department WHERE tbl_jabatan.kd_jabatan LIKE "%'.$id.'%" ')->fetchAll();
         // die(print_r($result));
         return $result;
     }

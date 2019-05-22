@@ -136,11 +136,108 @@
                         }, this);
         }
           };
-
+        var search  =  [
+            ["kd_jabatan", "Kode"],
+            ["nama_department", "Department"],
+            ["nama_jabatan", "Jabatan"]
+            ]
+        var combo1 = new Ext.form.ComboBox({
+            store: search,
+            displayField: 'nama_search', // <-- Add this 
+            valueField: 'kd_search',
+            typeAhead: true,
+            mode: 'local',
+            triggerAction: 'all',
+            selectOnFocus: true,
+            name: 'option',
+            width: 100,
+            style: 'margin-left: 5px',
+            // emptyText: 'Cari Berdasarkan',
+            value : 'Kode',
+            id: 'getjab1'
+        });
+        var combo2 = new Ext.form.ComboBox({
+            store: search,
+            displayField: 'nama_search', // <-- Add this 
+            valueField: 'kd_search',
+            typeAhead: true,
+            mode: 'local',
+            triggerAction: 'all',
+            selectOnFocus: true,
+            name: 'option',
+            width: 100,
+            style: 'margin-left: 10px',
+            emptyText: 'Cari Berdasarkan',
+            id: 'getjab2'
+        });
         var gridjab = Ext.create('Ext.grid.Panel', {
             plugins: [rowEditingJab],
             store :storejab,
-            tbar: toolbarjab,
+            bbar: new Ext.PagingToolbar({
+                id: 'paging',
+                pageSize: 30,
+                store: storejab,
+                displayInfo: true,
+                displayMsg: 'Displaying data {0} - {1} of {2}',
+                emptyMsg: "No data to display"
+            }),
+            tbar: [
+            {
+                xtype: 'tbtext',
+                text: 'Search By',
+                style: 'margin-left: 5px'
+            },
+            combo1,
+            {
+                xtype: 'textfield',
+                id: 'searchjab1',
+                style: 'margin-left: 10px;margin-right:10px',
+                enableKeyEvents: true,
+            },
+            combo2,
+            {
+                xtype: 'textfield',
+                id: 'searchjab2',
+                style: 'margin-left: 10px;margin-right:10px',
+                enableKeyEvents: true,
+            },
+            {   
+                icon   : '<?php echo $this->baseUrl(); ?>/extjs/docs/resources/images/preview.png',
+                type: 'submit',
+                handler: function(){ 
+                Ext.Ajax.request({
+                    method: 'GET',
+                    url: '<?php echo $this->baseUrl('/hr/searchjab/') ?>',
+                    standardSubmit: true,
+                    disableCaching: false,
+                    id  : 'cariget',
+                    success: function(response, opts) {
+                    
+                        if(response.responseText == '"kosong"'){
+                            Ext.Msg.alert('alert', 'Data Tidak');                                                   
+                        }else{
+                            storejab.clearData();
+                            storejab.loadRawData(Ext.JSON.decode(response.responseText), true);
+                        }                    
+                    },
+                    failure: function() {
+                        Ext.Msg.alert('', 'failed');
+                    },
+                    params: {
+                        action1 : Ext.getCmp('getjab1').getValue(),
+                        action2 : Ext.getCmp('getjab2').getValue(),
+                        search1 : Ext.getCmp('searchjab1').getValue(),
+                        search2 : Ext.getCmp('searchjab2').getValue(),
+                    }
+                });
+              }        
+            },
+            {
+                text: 'Reload Data',
+                handler: refreshData,
+                scope: this
+            }
+            ],
             stateful: true,
             collapsible: false,
             multiSelect: true,
@@ -235,113 +332,16 @@
             stripeRows: true,
             enableTextSelection: true,
             }
-        });
-    });
-    var searchdep  = new Ext.data.JsonStore({
-         extend: 'Ext.data.Model',
-                fields: [
-                   {name: 'kd_search',type: 'string'},
-                   {name: 'nama_search',type: 'string'},
-                ],
-          autoLoad: true,
-          autoDestroy: true,
-          proxy:{
-            type:'ajax',
-            url:'<?php echo $this->baseUrl('/erp/tree-search.json'); ?>',
-            reader:{
-                 type:'json',
-                 root:'dep'
-                }
-            },
-        });
-    var toolbarjab = Ext.create('Ext.toolbar.Toolbar', {
-    xtype: 'form',
-    method: 'POST',
-    width   : 50,
-    frame: true,
-    items: [{
-            text: 'Reload Data',
-            handler : function(){
-            storejab.load(); 
-            }
-        },
-        // begin using the right-justified button container
-        {
-        xtype     : 'combobox',
-        emptyText: 'Cari Berdasarkan',
-        id      : 'getjab1',
-        store     : searchdep,
-        displayField: 'nama_search', // <-- Add this 
-        valueField: 'kd_search',
-        listeners: {
-              select: function(text){
-            //Ext.Msg.alert('alert', 'Cari Data ' +text.lastValue);  
-            // console.log(text.lastValue);
-              }
-            }
-        }, 
-        {
-            xtype    : 'textfield',
-            name     : 'search',
-            type    : 'text',
-            emptyText: 'Cari Data',
-            id      : 'searchjab1',
-        },
-        {
-        xtype     : 'combobox',
-        emptyText: 'Cari Berdasarkan',
-        id      : 'getjab2',
-        store     : searchdep,
-        displayField: 'nama_search', // <-- Add this 
-        valueField: 'kd_search',
-        listeners: {
-              select: function(text){
-//               Ext.Msg.alert('alert', 'Cari Data ' +text.lastValue);  
-              // console.log(text.lastValue);
-              }
-            }
-        },
-        
-        {
-            xtype    : 'textfield',
-            name     : 'search',
-            type    : 'text',
-            emptyText: 'Cari Data',
-            id      : 'searchjab2',
-        },          
-        {   
-            icon   : '<?php echo $this->baseUrl(); ?>/extjs/docs/resources/images/preview.png',
-            type: 'submit',
-            handler: function(){ 
-            Ext.Ajax.request({
-                method: 'GET',
-                url: '<?php echo $this->baseUrl('/hr/searchjab/') ?>',
-                standardSubmit: true,
-                disableCaching: false,
-                id  : 'cariget',
-                success: function(response, opts) {
-                    
-                    if(response.responseText == '"kosong"'){
-                        Ext.Msg.alert('alert', 'Data Tidak');                                                   
-                    }else{
-                        storejab.clearData();
-                        storejab.loadRawData(Ext.JSON.decode(response.responseText), true);
-                    }                    
-                },
-                failure: function() {
-                    Ext.Msg.alert('', 'failed');
-                },
-                params: {
-                    action1 : Ext.getCmp('getjab1').getValue(),
-                    action2 : Ext.getCmp('getjab2').getValue(),
-                    search1 : Ext.getCmp('searchjab1').getValue(),
-                    search2 : Ext.getCmp('searchjab2').getValue(),
-                }
             });
-        }        
+    function refreshData()
+        {
+            storejab.clearFilter();
+            Ext.getCmp('searchjab1').setValue('');
+            Ext.getCmp('searchjab2').setValue('');
+            Ext.getCmp('paging').doRefresh();
         }
-    ]
-}); 
+    });
+
     var container = new Ext.Container({
             items: [
                 {

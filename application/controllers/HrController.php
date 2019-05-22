@@ -46,7 +46,7 @@ class HrController extends Zend_Controller_Action{
         if ($_GET['action'] === 'Kode') {
             $sqlcek = $this->model->cariDep($id);
         }elseif ($_GET['action'] === 'Department') {
-            $sqlcek = $this->db->query('select * from tbl_department where nama_department like "'.$id.'%"')->fetchAll();
+            $sqlcek = $this->db->query('select * from tbl_department where nama_department like "%'.$id.'%"')->fetchAll();
         }else{
             $error = 'kosong';
             echo json_encode($error);
@@ -142,11 +142,11 @@ class HrController extends Zend_Controller_Action{
         $search1 = $_GET['search1'];
         $search2 = $_GET['search2'];
         if ($action1 === 'nama_department' || $action2 === 'nama_department') {
-            $sqlcek = $this->db->query('SELECT * FROM tbl_jabatan LEFT JOIN tbl_department on tbl_jabatan.kd_department = tbl_department.kd_department WHERE tbl_jabatan.kd_jabatan LIKE "'.$search1.'%" AND tbl_department.nama_department LIKE "'.$search2.'%"')->fetchAll();
+            $sqlcek = $this->db->query('SELECT * FROM tbl_jabatan LEFT JOIN tbl_department on tbl_jabatan.kd_department = tbl_department.kd_department WHERE tbl_jabatan.kd_jabatan LIKE "%'.$search1.'%" AND tbl_department.nama_department LIKE "%'.$search2.'%"')->fetchAll();
             // echo "string";
             // die();
         }else{
-             $sqlcek = $this->db->query('SELECT * FROM tbl_jabatan LEFT JOIN tbl_department on tbl_jabatan.kd_department = tbl_department.kd_department WHERE tbl_jabatan.kd_jabatan LIKE "'.$search1.'%" AND tbl_jabatan.nama_jabatan LIKE "'.$search2.'%"')->fetchAll();
+             $sqlcek = $this->db->query('SELECT * FROM tbl_jabatan LEFT JOIN tbl_department on tbl_jabatan.kd_department = tbl_department.kd_department WHERE tbl_jabatan.kd_jabatan LIKE "%'.$search1.'%" AND tbl_jabatan.nama_jabatan LIKE "%'.$search2.'%"')->fetchAll();
              // echo "string";
         }
         // print_r($sqlcek);

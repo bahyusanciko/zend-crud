@@ -95,11 +95,81 @@
                         }, this);
             }
         };
+        var combo = new Ext.form.ComboBox({
+            store: ['Kode',
+                    'Department',
+                    ],
+            typeAhead: true,
+            mode: 'local',
+            // emptyText: 'Cari Berdasarkan',
+            value : 'Kode',
+            triggerAction: 'all',
+            selectOnFocus: true,
+            name: 'option',
+            width: 100,
+            style: 'margin-left: 5px',
+            id: 'getdep'
+        });
 
         var griddep = Ext.create('Ext.grid.Panel', {
             plugins: [rowEditingDep],
             store :storedep,
-            tbar : toolbardep,
+            bbar: new Ext.PagingToolbar({
+                id: 'paging',
+                pageSize: 30,
+                store: storedep,
+                displayInfo: true,
+                displayMsg: 'Displaying data {0} - {1} of {2}',
+                emptyMsg: "No data to display"
+            }),
+            tbar: [
+                {
+                    xtype: 'tbtext',
+                    text: 'Search By',
+                    style: 'margin-left: 5px'
+                },
+                combo, 
+                {
+                    xtype: 'textfield',
+                    id: 'searchdep',
+                    style: 'margin-left: 10px;margin-right:10px',
+                    enableKeyEvents: true,   
+                },
+                {   
+                        icon   : '<?php echo $this->baseUrl(); ?>/extjs/docs/resources/images/preview.png',
+                        type: 'submit',
+                        handler: function(){ 
+                        Ext.Ajax.request({
+                            method: 'GET',
+                            url: '<?php echo $this->baseUrl('/hr/searchdep/') ?>',
+                            standardSubmit: true,
+                            disableCaching: false,
+                            id  : 'cariget',
+                            success: function(response, opts) {
+                                
+                                if(response.responseText == '"kosong"'){
+                                    Ext.Msg.alert('alert', 'Data Tidak');                                                   
+                                }else{
+                                    storedep.clearData();
+                                    storedep.loadRawData(Ext.JSON.decode(response.responseText), true);
+                                }                    
+                            },
+                            failure: function() {
+                                Ext.Msg.alert('', 'failed');
+                            },
+                            params: {
+                                action: Ext.getCmp('getdep').getValue(),
+                                name : Ext.getCmp('searchdep').getValue(),
+                            }
+                        });
+                    }
+                },
+                {
+                    text: 'Reload Data',
+                    handler: refreshData,
+                    scope: this
+                }
+            ],
             stateful: true,
             collapsible: false,
             multiSelect: true,
@@ -178,75 +248,14 @@
             enableTextSelection: true,
             }
         });
-    });
-    var toolbardep = Ext.create('Ext.toolbar.Toolbar', {
-    id : 'dep-id',
-    // renderTo: document.body,
-    xtype: 'form',
-    method: 'POST',
-    width   : 50,
-    frame: true,
-    items: [{
-            text: 'Reload Data',
-            handler : function(){
-            storedep.load(); 
-            }
-        },
-        // begin using the right-justified button container
-        '->', // same as { xtype: 'tbfill' }
+    function refreshData()
         {
-        xtype     : 'combobox',
-        emptyText: 'Cari Berdasarkan',
-        id      : 'getdep',
-        store     : ['Kode',
-                    'Department',
-                    ],
-        listeners: {
-              select: function(text){
-//               Ext.Msg.alert('alert', 'Cari Data ' +text.lastValue);  
-              // console.log(text.lastValue);
-              }
-            }
-        },
-        
-        {
-            xtype    : 'textfield',
-            name     : 'search',
-            type    : 'text',
-            emptyText: 'Cari Data',
-            id      : 'searchdep',
-        },          
-        {   
-            icon   : '<?php echo $this->baseUrl(); ?>/extjs/docs/resources/images/preview.png',
-            type: 'submit',
-            handler: function(){ 
-            Ext.Ajax.request({
-                method: 'GET',
-                url: '<?php echo $this->baseUrl('/hr/searchdep/') ?>',
-                standardSubmit: true,
-                disableCaching: false,
-                id  : 'cariget',
-                success: function(response, opts) {
-                    
-                    if(response.responseText == '"kosong"'){
-                        Ext.Msg.alert('alert', 'Data Tidak');                                                   
-                    }else{
-                        storedep.clearData();
-                        storedep.loadRawData(Ext.JSON.decode(response.responseText), true);
-                    }                    
-                },
-                failure: function() {
-                    Ext.Msg.alert('', 'failed');
-                },
-                params: {
-                    action: Ext.getCmp('getdep').getValue(),
-                    name : Ext.getCmp('searchdep').getValue(),
-                }
-            });
-        }        
+            storedep.clearFilter();
+            Ext.getCmp('searchdep').setValue('');
+            Ext.getCmp('paging').doRefresh();
         }
-    ]
-});
+    });
+
     var container = new Ext.Container({
             items: [
                 {
