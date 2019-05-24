@@ -8,6 +8,7 @@
                 fields: [
                    {name: 'kd_department',type: 'string'},
                    {name: 'nama_department',type: 'string'},
+                   {name: 'desc_department',type: 'string'},
                 ],
           autoLoad: true,
           proxy:{
@@ -58,6 +59,12 @@
             name: 'nama',
             allowBlank: false,
         },
+        {
+            fieldLabel: 'Description',
+            xtype : 'textareafield',
+            name: 'desc',
+            allowBlank: false,
+        }
         ],
 
         buttons: [
@@ -98,6 +105,7 @@
         var combo = new Ext.form.ComboBox({
             store: ['Kode',
                     'Department',
+                    'Description'
                     ],
             typeAhead: true,
             mode: 'local',
@@ -191,6 +199,15 @@
                     }
                 },
                 {
+                    header     : 'Description Department',
+                    width    : 75,
+                    sortable : true,
+                    dataIndex: 'desc_department',
+                    field: {
+                    xtype: 'textfield'
+                    }
+                },
+                {
                     header     : 'Action',
                     menuDisabled: false,
                     sortable: false,
@@ -279,4 +296,3 @@
         <div id="grid-dep"></div>
     </div>
 </div>
-            

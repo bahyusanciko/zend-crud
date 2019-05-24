@@ -137,12 +137,11 @@
         }
           };
         var search  =  [
-            ["kd_jabatan", "Kode"],
             ["nama_department", "Department"],
             ["nama_jabatan", "Jabatan"]
             ]
         var combo1 = new Ext.form.ComboBox({
-            store: search,
+            store: [["kd_jabatan", "Kode"]],
             displayField: 'nama_search', // <-- Add this 
             valueField: 'kd_search',
             typeAhead: true,

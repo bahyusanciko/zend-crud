@@ -12,6 +12,7 @@
         <!-- GC -->
         <!-- page specific -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+
         <script type="text/javascript">
         Ext.Loader.setPath('Ext.ux', '<?php echo $this->baseUrl('/extjs/examples/ux/') ?>');
         //
@@ -74,10 +75,10 @@
                 if (record.get('leaf')) {
                     var itemid = record.get('id');
                     Ext.get("content-panel").load({
-                                                url:"<?php echo $this->baseUrl('/menu/') ?>" + itemid,
-                                                text:"loading",
-                                                scripts:true
-                                        });
+                        url:"<?php echo $this->baseUrl('/menu/') ?>" + itemid,
+                        text:"loading",
+                        scripts:true
+                    });
                 }   
             });
             
@@ -128,6 +129,14 @@
     <?php echo $this->render('menu/jabatan.phtml'); ?> -->
     </head>
 <body>
+     <!-- Pretty loading mask -->
+    <div id="loading-mask"></div>
+    <div id="loading">
+      <div class="loading-indicator">
+        Loading...
+      </div>
+    </div>
+    
     <div style="display:none;">
         <!-- Start page content -->
         <div id="start-div">

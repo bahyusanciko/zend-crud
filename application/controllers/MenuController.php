@@ -25,5 +25,9 @@ class MenuController extends Zend_Controller_Action{
     {
         # code...
     }
+    public function reportAction($value='')
+    {
+        # code...
+    }
 }
 

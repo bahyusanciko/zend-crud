@@ -26,13 +26,13 @@ class Application_Model_Hr extends Zend_Db_Table
     	return $result;
     }
     function updateDep($data=''){
-        $result = $this->db->query("UPDATE tbl_department SET nama_department = '".$data['nama_department']."' WHERE kd_department = '".$data['kd_department']."' ");
+        $result = $this->db->query("UPDATE tbl_department SET nama_department = '".$data['nama_department']."' ,  desc_department = '".$data['desc_department']."' WHERE kd_department = '".$data['kd_department']."' ");
         // die(print_r($result));
         return $result;
     }
     function insertDep($data=''){
-        $result = $this->db->query('INSERT INTO tbl_department (kd_department, nama_department )
-        VALUES ("'.$data['kd_department'].'","'.$data['nama_department'].'")');
+        $result = $this->db->query('INSERT INTO tbl_department (kd_department, nama_department , desc_department )
+        VALUES ("'.$data['kd_department'].'","'.$data['nama_department'].'", "'.$data['desc_department'].'")');
         // die(print_r($result));
         return $result;
     }

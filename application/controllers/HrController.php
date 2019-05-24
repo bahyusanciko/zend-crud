@@ -24,9 +24,11 @@ class HrController extends Zend_Controller_Action{
     }
     public function insertdepAction(){
     	// print_r($_POST);
+        // die();
     	$data = array(
     		'kd_department'	  => '',
             'nama_department' => $_POST['nama'],
+            'desc_department' => $_POST['desc'],
              );
         $sqlcek = $this->model->insertDep($data);
         if ($sqlcek) {
@@ -47,6 +49,8 @@ class HrController extends Zend_Controller_Action{
             $sqlcek = $this->model->cariDep($id);
         }elseif ($_GET['action'] === 'Department') {
             $sqlcek = $this->db->query('select * from tbl_department where nama_department like "%'.$id.'%"')->fetchAll();
+        }elseif ($_GET['action'] === 'Description') {
+            $sqlcek = $this->db->query('select * from tbl_department where desc_department like "%'.$id.'%"')->fetchAll();
         }else{
             $error = 'kosong';
             echo json_encode($error);
@@ -70,6 +74,7 @@ class HrController extends Zend_Controller_Action{
         $data = array(
             'kd_department' => $decoded['kd_department'],
             'nama_department' => $decoded['nama_department'],
+            'desc_department' => $decoded['desc_department']
              );
         $sqlcek = $this->model->updateDep($data);
         if ($sqlcek) {
@@ -141,25 +146,11 @@ class HrController extends Zend_Controller_Action{
         $action2 = $_GET['action2'];
         $search1 = $_GET['search1'];
         $search2 = $_GET['search2'];
-        if ($action1 === 'nama_department' || $action2 === 'nama_department') {
+        if ($action2 === 'nama_department') {
             $sqlcek = $this->db->query('SELECT * FROM tbl_jabatan LEFT JOIN tbl_department on tbl_jabatan.kd_department = tbl_department.kd_department WHERE tbl_jabatan.kd_jabatan LIKE "%'.$search1.'%" AND tbl_department.nama_department LIKE "%'.$search2.'%"')->fetchAll();
-            // echo "string";
-            // die();
         }else{
              $sqlcek = $this->db->query('SELECT * FROM tbl_jabatan LEFT JOIN tbl_department on tbl_jabatan.kd_department = tbl_department.kd_department WHERE tbl_jabatan.kd_jabatan LIKE "%'.$search1.'%" AND tbl_jabatan.nama_jabatan LIKE "%'.$search2.'%"')->fetchAll();
-             // echo "string";
         }
-        // print_r($sqlcek);
-        // die();
-        // }elseif ($_GET['action'] === 'Department') {
-        //     $sqlcek = $this->db->query('SELECT * FROM tbl_jabatan LEFT JOIN tbl_department on tbl_jabatan.kd_department = tbl_department.kd_department WHERE tbl_department.nama_department LIKE "'.$id.'%" ')->fetchAll();
-        // }elseif ($_GET['action'] === 'Jabatan') {
-        //     $sqlcek = $this->db->query('SELECT * FROM tbl_jabatan LEFT JOIN tbl_department on tbl_jabatan.kd_department = tbl_department.kd_department WHERE tbl_jabatan.nama_jabatan LIKE "'.$id.'%" ')->fetchAll();
-        // }else{
-        //     $error = 'kosong';
-        //     echo json_encode($error);
-        //     die();
-        // }
         if ($sqlcek) {
             $itemArray['jab'] = array_values($sqlcek);
             echo json_encode($itemArray,JSON_PRETTY_PRINT);
