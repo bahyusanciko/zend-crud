@@ -25,9 +25,18 @@ class MenuController extends Zend_Controller_Action{
     {
         # code...
     }
-    public function reportAction($value='')
-    {
-        # code...
+    public function reportAction($value=''){
+        $data = $this->model->allJab();
+        foreach ($data as $row ) {
+            $itemArray[] = 
+            array(
+                 $row['kd_jabatan'],
+                 $row['nama_department'],
+                 $row['nama_jabatan'],
+                 $row['desc_department']
+                 );
+        }
+        $this->view->data = json_encode($itemArray);
     }
 }
 
