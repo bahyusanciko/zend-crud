@@ -1,0 +1,16 @@
+{
+dep: [
+{
+kd_search: "kd_jabatan",
+nama_search: "Kode"
+},
+{
+kd_search: "nama_department",
+nama_search: "Department"
+},
+{
+kd_search: "nama_jabatan",
+nama_search: "Jabatan"
+}
+]
+}
