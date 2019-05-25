@@ -176,7 +176,15 @@ class HrController extends Zend_Controller_Action{
         }      
     }
     public function exportexcelAction(){
-        $productResult = $this->model->allJab();
+        $data = $this->model->allJab();
+        foreach ($data as $row ) {
+            $productResult[] = array(
+                'No' => $row['kd_jabatan'],
+                'Jabatan' => $row['nama_jabatan'],
+                'Department' => $row['nama_department'],
+                'Description' => $row['desc_department']
+                 );
+        }
         $filename = "Report-".date('Y-m-d').".xls";
         header("Content-Type: application/vnd.ms-excel");
         header("Content-Disposition: attachment; filename=\"$filename\"");

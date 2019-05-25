@@ -28,12 +28,11 @@
             store :store,
              tbar: [
             {
-                xtype: 'button',
+                type: 'button',
                 text: 'Download Excel',
-                style: 'margin-left: 5px',
                 handler: function()
                     {
-                        location.href = '<?php echo $this->baseUrl() ?>/hr/exportexcel';
+                        window.location = '<?php echo $this->baseUrl() ?>/hr/exportexcel';
 
                     }
             }],
@@ -69,7 +68,7 @@
             ], 
             height: 350,
             width: 780,
-            title: 'Table Jabatan',
+            title: 'Table Report',
             renderTo: 'grid',
             viewConfig: {
             stripeRows: true,
