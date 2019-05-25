@@ -1,69 +1,52 @@
-<!-- /*
-Fiddle loads js files sequentially and order matters bcz of dependencies
-Rearrange files & folder structure in tree if fiddle not working
-    FileSaver.js
-    Formatter.js
-    csvFormatter/*.js
-    excelFormatter/*.js
-    Exporter.js
-    ExporterButton.js
-*/ -->
 <script type="text/javascript">
-     
-Ext.Loader.setConfig({
-    enabled: true,
-    disableCaching: true,
-    paths: {
-        'Ext.ux.exporter': 'exporter'
-    }
-});
+     Ext.onReady(function() {
 
-Ext.application({
-    name: 'ExporterDemo',
-    requires: ['Ext.ux.exporter.Exporter'],
-    launch: function() {
-        var myData = <?php echo $this->data ?>;
+        Ext.tip.QuickTipManager.init();
 
-        // create the data store and load the data
-        var store = Ext.create('Ext.data.ArrayStore', {
-            fields: [
+        // sample static data for the store
+        var store  = new Ext.data.JsonStore({
+         extend: 'Ext.data.Model',
+                fields: [
                    {name: 'kd_jabatan',type: 'string'},
                    {name: 'nama_department',type: 'string'},
                    {name: 'nama_jabatan',type: 'string'},
                    {name: 'desc_department',type: 'string'},
                 ],
-            data: myData
-        });
+          autoLoad: true,
+          proxy:{
+            type:'ajax',
+            url:'<?php echo $this->baseUrl('/hr/jab'); ?>',
+            reader:{
+                 type:'json',
+                 root:'jab'
+                }
+            }
 
-        Ext.create('Ext.Container', {
-            //title: 'Exportable grid Demo',
-            layout: 'fit',
-            autoScroll: true,
-            bodyPadding: 15,
-            renderTo: 'grid-report',
-            items: [
-                {
-                xtype: 'grid',
-                region: 'center',
-                itemId: 'sampleGrid',
-                title: 'Report',
-                //titleAlign: 'center',
-                store: store,
-                tbar: [{
-                    xtype: 'exporterbutton',
-                    text: 'Save As CSV',
-                    format: 'excel',
-                    component: '#sampleGrid',
-                    title: 'Sample'
-                    }, 
-                ],
-                columns: [
+        });
+        
+        var gridjab = Ext.create('Ext.grid.Panel', {
+            store :store,
+             tbar: [
+            {
+                type: 'submit',
+                text: 'Download Excel',
+                style: 'margin-left: 5px',
+                handler: function()
+                    {
+                        location.href = '<?php echo $this->baseUrl() ?>/hr/exportexcel';
+
+                    }
+            }],
+            stateful: true,
+            collapsible: false,
+            multiSelect: true,
+            stateId: 'stateGrid',
+            columns: [
                 {
                     header     :'Kode Jabatan',
                     flex     : 1,
                     sortable : false,
                     dataIndex: 'kd_jabatan',
-                    id: 'kd_jabatan'
                 },
                 {
                     header     :'Nama Department',
@@ -83,13 +66,36 @@ Ext.application({
                     sortable : true,
                     dataIndex: 'desc_department',
                 },
-                ], 
-            }]
+            ], 
+            height: 350,
+            width: 780,
+            title: 'Table Jabatan',
+            renderTo: 'grid',
+            viewConfig: {
+            stripeRows: true,
+            enableTextSelection: true,
+            }
+            });
+
+    var container = new Ext.Container({
+            items: [
+                {
+                    title: 'report',
+                    layout: 'fit',
+                    autoScroll: true,
+                    bodyPadding: 15,
+                    contentEl : 'report-div'
+                }
+            ],
+            autoWidth: true,
+            height: 400,
+            renderTo: 'container-report'
         });
-    }
-});
-
+    });
 </script>
-<div id="grid-report">
-
+<div id="container-report">
+    <div id="report-div">
+        <div id="grid"></div>
+    </div>
 </div>
+          
