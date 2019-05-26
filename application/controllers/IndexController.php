@@ -48,9 +48,6 @@ class IndexController extends Zend_Controller_Action
         }
 
     }
-    public function viewAction(){
-        echo "string";
-    }
     function getUserIP()
     {
         $client  = @$_SERVER['HTTP_CLIENT_IP'];

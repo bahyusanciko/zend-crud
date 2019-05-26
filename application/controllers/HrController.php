@@ -176,7 +176,21 @@ class HrController extends Zend_Controller_Action{
         }      
     }
     public function exportexcelAction(){
-        $data = $this->model->allJab();
+            $action1 = $_GET['action1'];
+            $action2 = $_GET['action2'];
+            $search1 = $_GET['search1'];
+            $search2 = $_GET['search2'];
+        if ($action2 === 'nama_department') {
+            $data = $this->db->query('SELECT * FROM tbl_jabatan LEFT JOIN tbl_department on tbl_jabatan.kd_department = tbl_department.kd_department WHERE tbl_jabatan.kd_jabatan LIKE "%'.$search1.'%" AND tbl_department.nama_department LIKE "%'.$search2.'%"')->fetchAll();
+        }else if ($action1 === 'Kode') {
+            $data = $this->db->query('SELECT * FROM tbl_jabatan LEFT JOIN tbl_department on tbl_jabatan.kd_department = tbl_department.kd_department WHERE tbl_jabatan.kd_jabatan LIKE "%'.$search1.'%" AND tbl_jabatan.nama_jabatan LIKE "%'.$search2.'%"')->fetchAll();
+        }else if ($action2 === 'nama_jabatan') {
+            $data = $this->db->query('SELECT * FROM tbl_jabatan LEFT JOIN tbl_department on tbl_jabatan.kd_department = tbl_department.kd_department WHERE tbl_jabatan.kd_jabatan LIKE "%'.$search1.'%" AND tbl_jabatan.nama_jabatan LIKE "%'.$search2.'%"')->fetchAll();
+        }else{
+            $data = $this->model->allJab();    
+        }
+        // print_r($data);
+        // die();
         foreach ($data as $row ) {
             $productResult[] = array(
                 'No' => $row['kd_jabatan'],

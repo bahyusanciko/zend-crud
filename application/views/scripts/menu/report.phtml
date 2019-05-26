@@ -23,19 +23,100 @@
             }
 
         });
-        
+        var search  =  [
+            ["nama_department", "Department"],
+            ["nama_jabatan", "Jabatan"]
+            ]
+        var combo1 = new Ext.form.ComboBox({
+            store: [["kd_jabatan", "Kode"]],
+            displayField: 'nama_search', // <-- Add this 
+            valueField: 'kd_search',
+            typeAhead: true,
+            mode: 'local',
+            triggerAction: 'all',
+            selectOnFocus: true,
+            name: 'option',
+            width: 100,
+            style: 'margin-left: 5px',
+            // emptyText: 'Cari Berdasarkan',
+            value : 'Kode',
+            id: 'getjab1'
+        });
+        var combo2 = new Ext.form.ComboBox({
+            store: search,
+            displayField: 'nama_search', // <-- Add this 
+            valueField: 'kd_search',
+            typeAhead: true,
+            mode: 'local',
+            triggerAction: 'all',
+            selectOnFocus: true,
+            name: 'option',
+            width: 100,
+            style: 'margin-left: 10px',
+            emptyText: 'Cari Berdasarkan',
+            id: 'getjab2'
+        });
         var gridjab = Ext.create('Ext.grid.Panel', {
             store :store,
-             tbar: [
+            tbar: [
             {
-                type: 'button',
-                text: 'Download Excel',
-                handler: function()
-                    {
-                        window.location = '<?php echo $this->baseUrl() ?>/hr/exportexcel';
-
+                text: 'Reload Data',
+                handler: refreshData,
+                scope: this
+            },
+            combo1,
+            {
+                xtype: 'textfield',
+                id: 'searchjab1',
+                style: 'margin-left: 10px;margin-right:10px',
+                enableKeyEvents: true,
+            },
+            combo2,
+            {
+                xtype: 'textfield',
+                id: 'searchjab2',
+                style: 'margin-left: 10px;margin-right:10px',
+                enableKeyEvents: true,
+            },
+            {   
+                icon   : '<?php echo $this->baseUrl(); ?>/extjs/docs/resources/images/preview.png',
+                type: 'submit',
+                text : 'Show',
+                handler: function(){ 
+                Ext.Ajax.request({
+                    method: 'GET',
+                    url: '<?php echo $this->baseUrl('/hr/searchjab/') ?>',
+                    standardSubmit: true,
+                    disableCaching: false,
+                    id  : 'cariget',
+                    success: function(response, opts) {
+                    
+                        if(response.responseText == '"kosong"'){
+                            Ext.Msg.alert('alert', 'Data Tidak');                                                   
+                        }else{
+                            store.clearData();
+                            store.loadRawData(Ext.JSON.decode(response.responseText), true);
+                        }                    
+                    },
+                    failure: function() {
+                        Ext.Msg.alert('', 'failed');
+                    },
+                    params: {
+                        action1 : Ext.getCmp('getjab1').getValue(),
+                        action2 : Ext.getCmp('getjab2').getValue(),
+                        search1 : Ext.getCmp('searchjab1').getValue(),
+                        search2 : Ext.getCmp('searchjab2').getValue(),
                     }
-            }],
+                });
+              }        
+            },
+
+            {
+                type: 'submit',
+                text: 'Download',
+                handler: function(){  download();}
+            },
+            ],
             stateful: true,
             collapsible: false,
             multiSelect: true,
@@ -75,7 +156,20 @@
             enableTextSelection: true,
             }
             });
-
+    function refreshData(){
+        store.load();
+        Ext.getCmp('searchjab1').setValue('');
+        Ext.getCmp('searchjab2').setValue('');
+    }
+    function download(){
+        var param1 = Ext.getCmp('getjab1').getValue();
+        var param2 = Ext.getCmp('getjab2').getValue();
+        var value1 = Ext.getCmp('searchjab1').getValue();
+        var value2 = Ext.getCmp('searchjab2').getValue();
+        location.href = '<?php echo $this->baseUrl() ?>/hr/exportexcel/?action1='+ param1 +'&action2='+ param2 +'&search1='+ value1 +'&search2=' + value2 ;
+        store.clearFilter();
+         Ext.Msg.alert('alert', 'Download Berhasil'); 
+    }
     var container = new Ext.Container({
             items: [
                 {
