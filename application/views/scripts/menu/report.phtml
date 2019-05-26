@@ -157,6 +157,7 @@
             }
             });
     function refreshData(){
+        store.clearFilter();
         store.load();
         Ext.getCmp('searchjab1').setValue('');
         Ext.getCmp('searchjab2').setValue('');
@@ -167,8 +168,8 @@
         var value1 = Ext.getCmp('searchjab1').getValue();
         var value2 = Ext.getCmp('searchjab2').getValue();
         location.href = '<?php echo $this->baseUrl() ?>/hr/exportexcel/?action1='+ param1 +'&action2='+ param2 +'&search1='+ value1 +'&search2=' + value2 ;
-        store.clearFilter();
          Ext.Msg.alert('alert', 'Download Berhasil'); 
+         grid.clearFilter();
     }
     var container = new Ext.Container({
             items: [
