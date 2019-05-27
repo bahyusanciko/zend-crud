@@ -167,9 +167,15 @@
         var param2 = Ext.getCmp('getjab2').getValue();
         var value1 = Ext.getCmp('searchjab1').getValue();
         var value2 = Ext.getCmp('searchjab2').getValue();
-        location.href = '<?php echo $this->baseUrl() ?>/hr/exportexcel/?action1='+ param1 +'&action2='+ param2 +'&search1='+ value1 +'&search2=' + value2 ;
+        var link = document.createElementNS("http://www.w3.org/1999/xhtml", "a");
+        link.href = '<?php echo $this->baseUrl() ?>/hr/exportexcel/?action1='+ param1 +'&action2='+ param2 +'&search1='+ value1 +'&search2=' + value2 ;
+        var event = new MouseEvent('click', {
+            'view': window,
+            'bubbles': false,
+            'cancelable': true
+        });
+        link.dispatchEvent(event);
          Ext.Msg.alert('alert', 'Download Berhasil'); 
-         grid.clearFilter();
     }
     var container = new Ext.Container({
             items: [
