@@ -10,15 +10,7 @@ class LoginController extends Zend_Controller_Action{
         /* Initialize action controller here */
         $this->db = Zend_Db_Table::getDefaultAdapter();
         $this->model = new Application_Model_Admin();
-        $this->session = new Zend_Session_Namespace(self::SESSION_NAMESPACE);
-    }
-    function getsecurity(){
-        $username = $this->session->user['username_admin'];
-        if ($username) {
-            $this->redirect('login/admin');
-        }else{
-            $this->redirect('login');
-        }
+        $this->session = new Zend_Session_Namespace('login');
     }
     public function indexAction(){
        $this->view->title = "Login";
@@ -39,7 +31,7 @@ class LoginController extends Zend_Controller_Action{
                         'level' => $ambil['level_admin']
                     );
                     //die(print_r($sess));
-                    $this->session->user = $sess;
+                    $this->session = $sess;
                     $data = "Success";
                     echo json_encode($data);
                     die();

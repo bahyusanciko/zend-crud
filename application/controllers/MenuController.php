@@ -7,9 +7,13 @@ class MenuController extends Zend_Controller_Action{
     public function init(){
         $this->db = Zend_Db_Table::getDefaultAdapter();
         $this->model = new Application_Model_Hr();
-        $this->session = new Zend_Session_Namespace(self::SESSION_NAMESPACE);
+        $this->session = new Zend_Session_Namespace('login');
+        // if ($this->session->kd_admin) {
+        //     $this->redirect('menu');
+        // }else{
+        //     $this->redirect('login');
+        // }
     }
-
     public function indexAction(){
         $this->view->user =  $this->session->user['nama_admin'];
     }
